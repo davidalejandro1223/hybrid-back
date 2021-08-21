@@ -9,3 +9,5 @@ class User(AbstractUser):
     is_company_admin = models.BooleanField(verbose_name="Administrador de la empresa", default=False)
     is_worker = models.BooleanField(verbose_name="Trabajador de la empresa", default=False)
 
+    USERNAME_FIELD = 'email'
+
