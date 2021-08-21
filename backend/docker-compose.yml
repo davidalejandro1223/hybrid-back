@@ -3,6 +3,7 @@ version: "3.8"
 services: 
     sb_api:
         build: .
+        command: python -u manage.py runserver 0.0.0.0:8000
         environment: 
             DJANGO_SETTINGS_MODULE: "spacebooking.settings"
         volumes: 
