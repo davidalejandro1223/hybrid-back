@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'spacebooking.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'plannermate',
+        'NAME': 'spacebooking',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST':'sb_db',

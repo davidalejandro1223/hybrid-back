@@ -59,8 +59,6 @@ class BranchOffice(models.Model):
 	#lng = models.DecimalField(max_digits=22, decimal_places=16, blank=False, null=True)
 	#position = models.PointField(null=True, blank=False)
     address = models.CharField(max_length=250)
-    country = models.ForeignKey(
-    	Country,related_name='branchoffice_country_id',on_delete=models.CASCADE)
     location = models.ForeignKey(
     	Location,related_name='branchoffice_location_id',on_delete=models.CASCADE)
     branch_office_config = models.ForeignKey(
@@ -106,6 +104,12 @@ class AreaConfig(models.Model):
 	created_date = models.DateTimeField(auto_now_add=True)
 
 
+class Resource(models.Model):
+	name = models.CharField(max_length=250)
+	compartible = models.BooleanField(default=False)
+	reservable = models.BooleanField(default=False)
+
+
 class Area(models.Model):
 	TIPO = [
 	    ("ESCRITORIO", 'Escritorio'),
@@ -116,9 +120,14 @@ class Area(models.Model):
 	tipo = models.CharField(
 		max_length=100,
 		choices=TIPO)
+	resource = models.ForeignKey(
+		Resource,related_name='area_resource_id',on_delete=models.CASCADE)	
 	branch_area_config = models.ForeignKey(
-		AreaConfig,related_name='areaconfig_id',on_delete=models.CASCADE)
+		AreaConfig,related_name='area_areaConfig_id',on_delete=models.CASCADE)
 	created_date = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return f'{self.tipo}: {self.available} - {self.maximun_capacity}'
 
 
 class Reserva(models.Model):
