@@ -3,6 +3,7 @@ version: "3.8"
 services: 
     sb_api:
         build: .
+        command: python -u manage.py runserver 0.0.0.0:8000
         environment: 
             DJANGO_SETTINGS_MODULE: "spacebooking.settings"
         volumes: 
@@ -19,6 +20,7 @@ services:
             - postgres_data:/var/lib/postgresql/data
         environment: 
             POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "spacebooking"
         ports:
             - "5432:5432"
 
