@@ -12,7 +12,6 @@ from infrastructure.models import (
 	Company,
 	BranchOfficeConfig,
 	BranchOffice,
-	BranchOfficeEmployee,
 	Contract,
 	AreaConfig,
 	Area,
@@ -46,7 +45,6 @@ admin.site.register(Location)
 admin.site.register(Company)
 admin.site.register(BranchOfficeConfig)
 admin.site.register(BranchOffice)
-admin.site.register(BranchOfficeEmployee)
 admin.site.register(Contract)
 admin.site.register(AreaConfig)
 admin.site.register(Area)
