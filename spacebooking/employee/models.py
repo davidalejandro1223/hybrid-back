@@ -29,9 +29,6 @@ class ContagiousHistory(models.Model):
 
 class Policy(models.Model):
 
-<<<<<<< HEAD:backend/spacebooking/employee/models.py
-class Policy(models.Model):
-=======
     DAYS_OF_THE_WEEK = (
         ('Mon. ', 'Monday'),
         ('Tue. ', 'Tuesday.'),
@@ -42,7 +39,6 @@ class Policy(models.Model):
         ('Sun. ', 'Sunday')
     )
 
->>>>>>> 7b2f225eaffddaab0c2032b841f563ae0b52336c:spacebooking/employee/models.py
     asigned_by_admin = models.BooleanField(default=False)
     employee = models.ForeignKey(User,related_name='policy_user_id',on_delete=models.CASCADE)
     area = models.ForeignKey(Area,related_name='policy_area_id',on_delete=models.CASCADE, blank=True, null=True)

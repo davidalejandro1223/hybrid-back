@@ -13,14 +13,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='workgroup',
-            name='employee',
-        ),
-        migrations.RemoveField(
-            model_name='workgroup',
-            name='work_position',
-        ),
-        migrations.RemoveField(
             model_name='policy',
             name='horario',
         ),
@@ -33,11 +25,5 @@ class Migration(migrations.Migration):
             model_name='policy',
             name='area',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='policy_area_id', to='infrastructure.area'),
-        ),
-        migrations.DeleteModel(
-            name='BaseWorkGroup',
-        ),
-        migrations.DeleteModel(
-            name='WorkGroup',
         ),
     ]
