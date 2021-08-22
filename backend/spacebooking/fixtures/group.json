@@ -1,0 +1,1 @@
+[{ "model": "auth.group","fields": {"nombre": "Producto"}},{ "model": "auth.group","fields": {"nombre": "Ventas"}},{ "model": "auth.group","fields": {"nombre": "Marketing"}},{ "model": "auth.group","fields": {"nombre": "Gerencia"}},{ "model": "auth.group","fields": {"nombre": "RRHH"}}]
