@@ -21,7 +21,7 @@ class Location(models.Model):
 		choices=LEVELS)
 
     def __str__(self):
-        return f'{self.nombre} ({self.id})'
+        return self.nombre
 
 
 class Company(models.Model):

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from infrastructure.models import (Country,Location,Company,BranchOfficeConfig,BranchOffice,
-    BranchOfficeEmployee,Contract,AreaConfig,Resource,Area,Reserva
+    Contract,AreaConfig,Resource,Area,Reserva
 )
 
 User = get_user_model()
