@@ -51,4 +51,5 @@ class Policy(models.Model):
     employee = models.ForeignKey(User,related_name='policy_user_id',on_delete=models.CASCADE)
     area = models.ForeignKey(Area,related_name='policy_area_id',on_delete=models.CASCADE)
     horario = models.DateTimeField(blank=True, null=True)
-    created_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DatetimeField(auto_now=True)
