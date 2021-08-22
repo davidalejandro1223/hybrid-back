@@ -47,9 +47,32 @@ class WorkGroup(models.Model):
 
 
 class Policy(models.Model):
+
+    DAYS_OF_THE_WEEK = (
+        ('Mon. ', 'Monday'),
+        ('Tue. ', 'Tuesday.'),
+        ('Wed. ', 'Wednesday'),
+        ('Thu. ', 'Thursday'),
+        ('Fri. ', 'Friday'),
+        ('Sat. ', 'Saturday'),
+        ('Sun. ', 'Sunday')
+    )
+
     asigned_by_admin = models.BooleanField(default=False)
     employee = models.ForeignKey(User,related_name='policy_user_id',on_delete=models.CASCADE)
-    area = models.ForeignKey(Area,related_name='policy_area_id',on_delete=models.CASCADE)
-    horario = models.DateTimeField(blank=True, null=True)
+    area = models.ForeignKey(Area,related_name='policy_area_id',on_delete=models.CASCADE, blank=True, null=True)
+    days_of_the_week = models.CharField(verbose_name="dias de asistencia", max_length=50)
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DatetimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def get_days_of_the_week(self):
+        days_list = self.days_of_the_week.split(" ")
+        return list(filter(lambda x: x[0].strip in days_list, self.DAYS_OF_THE_WEEK))
+    
+    def set_days_of_the_week(self, days_list):
+        days_str = ""
+        for day in days_list:
+            day_abr = list(filter(lambda x: x[1]==day, self.DAYS_OF_THE_WEEK))[0][0]
+            days_str+=day_abr
+        self.days_of_the_week = days_str
+        return self.days_of_the_week
