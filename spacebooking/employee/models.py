@@ -42,7 +42,7 @@ class Policy(models.Model):
     asigned_by_admin = models.BooleanField(default=False)
     employee = models.ForeignKey(User,related_name='policy_user_id',on_delete=models.CASCADE)
     area = models.ForeignKey(Area,related_name='policy_area_id',on_delete=models.CASCADE, blank=True, null=True)
-    days_of_the_week = models.CharField(verbose_name="dias de asistencia", max_length=50)
+    days_of_the_week = models.CharField(verbose_name="dias de asistencia", max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
