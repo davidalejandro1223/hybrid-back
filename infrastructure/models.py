@@ -20,19 +20,22 @@ class Location(models.Model):
 		max_length=20,
 		choices=LEVELS)
 
+    def __str__(self):
+        return f'{self.nombre} ({self.id})'
+
 
 class Company(models.Model):
     name = models.CharField(max_length=250)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.name}: {self.id}'
+        return f'{self.name} ({self.id})'
 
 
 class BranchOfficeConfig(models.Model):
-	start_date = models.DateTimeField(
+	start_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada inicio")
-	end_date = models.DateTimeField(
+	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada fin")
 	maximun_request_days_contagious = models.IntegerField(default=14)
 	notify_branch_office = models.BooleanField(default=False)
@@ -55,7 +58,7 @@ class BranchOffice(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.name}: ({self.company})'
+        return f'{self.name} ({self.company})'
 
 
 class Contract(models.Model):
@@ -89,9 +92,9 @@ class AreaConfig(models.Model):
 	maximun_capacity = models.IntegerField(default=0)
 	immobile_spaces = models.IntegerField(default=0,verbose_name="Cantidad espacios fijos")
 	flexible_spaces = models.IntegerField(default=0,verbose_name="Cantidad espacios flexibles")
-	start_date = models.DateTimeField(
+	start_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada area inicio")
-	end_date = models.DateTimeField(
+	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada area fin")
 	maximun_request_days_ahead = models.IntegerField(default=8)	
 	created_date = models.DateTimeField(auto_now_add=True)
@@ -147,9 +150,9 @@ class Reserva(models.Model):
 	    ("CANCELADA", 'Cancelada')	    
 	]
 	fijo = models.BooleanField(default=False)
-	start_date = models.DateTimeField(
+	start_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada")
-	end_date = models.DateTimeField(
+	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada")
 	status = models.CharField(
 		max_length=100,
