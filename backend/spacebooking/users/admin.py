@@ -4,8 +4,6 @@ from django.contrib.auth.admin import UserAdmin
 from users.models import User
 from employee.models import (
 	ContagiousHistory,
-	BaseWorkGroup,
-	WorkGroup,
 	Policy
 )
 from infrastructure.models import (
@@ -42,8 +40,6 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(ContagiousHistory)
-admin.site.register(BaseWorkGroup)
-admin.site.register(WorkGroup)
 admin.site.register(Policy)
 admin.site.register(Country)
 admin.site.register(Location)

@@ -13,22 +13,13 @@ class Location(models.Model):
     LEVELS = [
         ("COMUNA", 'Comuna')
     ]
-    FASES = [
-        ("FASEI", 'Fase I'),
-        ("FASEII", 'Fase II'),
-        ("FASEIII", 'Fase III'),
-        ("FASEIV", 'Fase IV'),
-    ]    
     nombre = models.CharField(max_length=250)
     country = models.ForeignKey(
     	Country,related_name='location_country_id',on_delete=models.CASCADE)
-    level = models.CharField(
+    admnistrative_level = models.CharField(
 		max_length=20,
 		choices=LEVELS)
-    fase = models.CharField(max_length=250)
 
-    """Si cambia de fase una location, cambiarán todas,
-    Hay que tomar en cuenta esas validaciones"""
 
 class Company(models.Model):
     name = models.CharField(max_length=250)
@@ -39,7 +30,6 @@ class Company(models.Model):
 
 
 class BranchOfficeConfig(models.Model):
-	maximun_capacity = models.IntegerField(default=0)
 	start_date = models.DateTimeField(
 	    blank=True, null=True, verbose_name="hora jornada inicio")
 	end_date = models.DateTimeField(
@@ -93,6 +83,13 @@ class Contract(models.Model):
 
 
 class AreaConfig(models.Model):
+	FASES = [
+		("FASEI", 'Fase I'),
+		("FASEII", 'Fase II'),
+		("FASEIII", 'Fase III'),
+		("FASEIV", 'Fase IV'),
+	]    
+	fase = models.CharField(max_length=250,choices=FASES)
 	maximun_capacity = models.IntegerField(default=0)
 	immobile_spaces = models.IntegerField(default=0,verbose_name="Cantidad espacios fijos")
 	flexible_spaces = models.IntegerField(default=0,verbose_name="Cantidad espacios flexibles")
