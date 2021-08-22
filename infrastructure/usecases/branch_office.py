@@ -20,7 +20,7 @@ class GetBranchOffices:
         self.repository = repo
 
     def execute(self) -> QuerySet:
-        available_branch_offices = self.repository.get_branch_office_by_company(
+        available_branch_offices = self.repository.get_branch_office_by_employee(
             self.employee
         )
 

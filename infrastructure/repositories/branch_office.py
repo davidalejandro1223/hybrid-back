@@ -7,10 +7,11 @@ from infrastructure.models import (Country,Location,Company,BranchOfficeConfig,B
 from users.models import User
 
 class BranchOfficeRepository:
-    def get_branch_office_by_company(
+    def get_branch_office_by_employee(
         self, employee: User
     ) -> QuerySet:
-        return BranchOffice.objects.filter(
-            branchofficeemployee=employee
-        )
+        contracts =  Contract.objects.filter(
+            employee=employee
+        ).values_list("branch_offices", flat=True)
+
 

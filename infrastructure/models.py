@@ -85,7 +85,7 @@ class AreaConfig(models.Model):
 		("FASEII", 'Fase II'),
 		("FASEIII", 'Fase III'),
 		("FASEIV", 'Fase IV'),
-		("FASEIV", 'Fase V'),
+		("FASEV", 'Fase V'),
 		("Sin fase", "Sin fase")
 	]    
 	fase = models.CharField(max_length=250,choices=FASES)
