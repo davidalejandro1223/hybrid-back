@@ -13,6 +13,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     is_company_admin = models.BooleanField(verbose_name="Administrador de la empresa", default=False)
     is_worker = models.BooleanField(verbose_name="Trabajador de la empresa", default=False)
+    mobility_permit = models.FileField(verbose_name="Pase de movilidad", blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [

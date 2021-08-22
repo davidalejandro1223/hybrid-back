@@ -34,7 +34,7 @@ def send_confirmation_email(user):
     
     content = render_to_string(
         'emails/users/account_verification.html',
-        {'verification_url': verification_url, 'user': user}
+        {'verification_url': verification_url, 'user': user, 'token':verification_token}
     )
     
     msg = EmailMultiAlternatives(subject, content, from_email, [user.email])
