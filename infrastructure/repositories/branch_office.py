@@ -10,7 +10,6 @@ class BranchOfficeRepository:
     def get_branch_office_by_company(
         self, employee: User
     ) -> QuerySet:
-        import pdb;pdb.set_trace()
         return BranchOffice.objects.filter(
             branchofficeemployee=employee
         )
