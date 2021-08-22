@@ -1,0 +1,1 @@
+[{ "model": "users.user","fields": {"password": "pbkdf2_sha256$150000$7Ovl4wMkMV9T$b0IcOXqvfBcj3MLLjbthAAa0lqdu2tW6tqPMnEv48b0=","is_superuser": true,"first_name": "admin","last_name": "admin","email": "admin@admin.com","is_staff": true,"is_active": true,"date_joined": "2020-08-21","is_company_admin": true}}]
