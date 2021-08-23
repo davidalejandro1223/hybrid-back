@@ -71,7 +71,7 @@ class BranchOffice(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.name} ({self.company})'
+        return f'{self.name}'
 
 
 class Contract(models.Model):
