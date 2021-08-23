@@ -37,7 +37,8 @@ class BranchOfficeConfig(models.Model):
 	    blank=True, null=True, verbose_name="hora jornada inicio")
 	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada fin")
-	maximun_request_days_contagious = models.IntegerField(default=14)
+	maximun_request_days_contagious = models.IntegerField(
+		default=14,verbose_name="dias de cuarentena/riesgo establecidos por sucursal")
 	notify_branch_office = models.BooleanField(default=False)
 	block_branch_office = models.BooleanField(default=False)
 	created_date = models.DateTimeField(auto_now_add=True)

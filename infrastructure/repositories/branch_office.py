@@ -1,10 +1,12 @@
+import datetime
+
 from django.utils import timezone
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, CharField, DateField
 
 from infrastructure.models import (Country,Location,Company,BranchOfficeConfig,BranchOffice,
     Contract,AreaConfig,Resource,Area,Reserva
 )
-from users.models import User
+from users.models import (User)
 
 class BranchOfficeRepository:
     def get_branch_office_by_employee(
@@ -12,9 +14,18 @@ class BranchOfficeRepository:
     ) -> QuerySet:
 
         branch_offices =  Contract.objects.filter(
-            employee=int(employee)
+            employee=employee
         ).values_list("branch_offices", flat=True)
 
         return BranchOffice.objects.filter(
             id__in=branch_offices)
 
+    def get_contagious_history_by_employee(
+        self, employee: User
+    ) -> DateField:
+
+        contagious_result = ContagiousHistory.objects.filter(
+            employee=employee
+        ).last().fecha_sintomas
+
+        return contagious_result
