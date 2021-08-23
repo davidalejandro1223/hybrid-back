@@ -13,6 +13,7 @@ from infrastructure.models import (
     BranchOffice,
     Country,
     Location,
+    Reserva
 )
 from users.models import User
 
@@ -100,3 +101,33 @@ class BranchOfficeLoader:
             branch_office.save()
         
         return "Sucursales creadas satisfactoriamente", 200
+
+class GetBranchOfficeBookingStatus:
+    def __init__(self, branch_office_id, datetime_to_check):
+        self.branch_office_id = branch_office_id
+        self.datetime_to_check = datetime_to_check
+
+    def execute(self):
+        total_occupied = 0
+        available_capacity = 0
+        branch_office = BranchOffice.objects.get(id=self.branch_office_id)
+        areas = branch_office.area_set.all()
+        for area in areas:
+            start_block, end_block = area.get_time_block_by_time(self.datetime_to_check)
+            start_block_date = self.datetime_to_check.replace(hour=start_block.hour, minute=start_block.minute)
+            end_block_date = self.datetime_to_check.replace(hour=end_block.hour, minute=end_block.minute)
+            booking = Reserva.objects.filter(
+                status__in=["ASIGNADA", "CONFIRMADA"],
+                start_date__lte=start_block_date,
+                end_date__gte=end_block_date,
+                area=area
+            )
+            available_capacity+=area.area_config.maximun_capacity
+            total_occupied+=len(booking)
+            area.assigned_capacity = len(booking)
+            area.employees_booked = booking
+        branch_office.areas = areas
+        branch_office.available_capacity=available_capacity
+        branch_office.assigned_capacity=total_occupied
+        branch_office.fase = branch_office.location.get_fase_display()
+        return branch_office

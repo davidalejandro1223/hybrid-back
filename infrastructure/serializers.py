@@ -41,3 +41,35 @@ class AreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
         fields = ['created_date']
+
+
+class MinEmployeeSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+class MinReservaSerializer(serializers.Serializer):
+    employee = MinEmployeeSerializer(read_only=True)
+    resource = serializers.CharField(source='resource.name')
+    seat = serializers.CharField(source='seat.id_in_area')
+    start_date = serializers.DateTimeField()
+    end_date = serializers.DateTimeField()
+    status = serializers.CharField()
+    fijo = serializers.BooleanField()
+
+class AreaConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AreaConfig
+        fields = '__all__'
+
+class AreaSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=250)
+    available = serializers.BooleanField()
+    maximun_capacity = serializers.IntegerField(source='area_config.maximun_capacity')
+    assigned_capacity = serializers.IntegerField()
+    area_config = AreaConfigSerializer()
+    employees_booked = MinReservaSerializer(many=True)
+
+class BookingStatusSerializer(BranchOfficeSerializer):
+    fase = serializers.CharField()
+    areas = AreaSerializer(many=True)

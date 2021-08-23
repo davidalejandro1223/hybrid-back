@@ -4,6 +4,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 from users.models import User
 from infrastructure.models import (
@@ -28,7 +29,8 @@ from infrastructure.repositories.branch_office import BranchOfficeRepository
 from infrastructure.repositories.contagious_history import ContagiousHistoryRepository
 from infrastructure.usecases.branch_office import (
     GetBranchOffices,
-    BranchOfficeLoader
+    BranchOfficeLoader,
+    GetBranchOfficeBookingStatus
 )
 from .serializers import (
     BranchOfficeSerializer,
@@ -36,6 +38,7 @@ from .serializers import (
     ContagiousHistoryStatusSerializer,
     ContagiousHistoryUpdateSerializer,
     AreaSerializer
+    BookingStatusSerializer
 )
 
 
@@ -105,4 +108,13 @@ class AreaLoaderAPIView(generics.CreateAPIView):
         uc = AreaLoader(user, excel_file)
         response, status = uc.execute()
         return Response(data={"status":response}, status=status)
+
+class BookingStatusAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, branch_office_id):
+        uc = GetBranchOfficeBookingStatus(branch_office_id, timezone.now().replace(second=0, microsecond=0))
+        data = uc.execute()
+        serializer = BookingStatusSerializer(data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
