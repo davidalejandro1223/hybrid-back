@@ -131,16 +131,50 @@ class Area(models.Model):
 		start_time = timedelta(hours=area_config.start_date.hour, minutes=area_config.start_date.minute)
 		end_time = timedelta(hours=area_config.end_date.hour, minutes=area_config.end_date.minute)
 		cant_hours = (end_time - start_time).seconds/3600
+
+		time_blocks.append({
+				"bloque 1":{"start_time":area_config.start_date, "end_time":area_config.end_date}
+			})
+		
+		block_time = cant_hours / 2
+		delta = timedelta(hours=block_time)
+		for i in range(0,2):
+			start_block = start_time + (delta*i)
+			end_block = start_block + delta
+			
+			start_minutes, start_hours = math.modf(start_block.seconds/3600)
+			start_hours = int(start_hours)
+			start_minutes = int(start_minutes * 60)
+
+			end_minutes, end_hours = math.modf(end_block.seconds/3600)
+			end_hours = int(end_hours)
+			end_minutes = int(end_minutes * 60)
+
+			start_datetime =  time(hour=start_hours, minute=start_minutes)
+			end_datetime =  time(hour=end_hours, minute=end_minutes)
+			
+			time_blocks.append({
+				f"bloque {i+2}":{"start_time":start_datetime, "end_time":end_datetime}
+			})
+
 		block_time = cant_hours / 4
 		delta = timedelta(hours=block_time)
 		for i in range(0,4):
 			start_block = start_time + (delta*i)
 			end_block = start_block + delta
 			
-			start_datetime = datetime.combine(datetime.now().date, time(hour=start_block.seconds/3600))
-			end_datetime = datetime.combine(datetime.now().date, time(hour=end_block.seconds/3600))
+			start_minutes, start_hours = math.modf(start_block.seconds/3600)
+			start_hours = int(start_hours)
+			start_minutes = int(start_minutes * 60)
+
+			end_minutes, end_hours = math.modf(end_block.seconds/3600)
+			end_hours = int(end_hours)
+			end_minutes = int(end_minutes * 60)
+
+			start_datetime =  time(hour=start_hours, minute=start_minutes)
+			end_datetime =  time(hour=end_hours, minute=end_minutes)
 			time_blocks.append({
-				f"bloque{i+1}":{"start_time":start_datetime.time, "end_time":end_datetime.time}
+				f"bloque {i+4}":{"start_time":start_datetime.time(), "end_time":end_datetime.time()}
 			})
 		return time_blocks
 	
