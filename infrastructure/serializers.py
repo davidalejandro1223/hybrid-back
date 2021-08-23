@@ -9,6 +9,7 @@ from employee.models import (ContagiousHistory)
 User = get_user_model()
 
 class BranchOfficeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     name = serializers.CharField(read_only=True)
     location = serializers.CharField(read_only=True)
     address = serializers.CharField(read_only=True)

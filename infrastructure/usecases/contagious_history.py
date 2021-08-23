@@ -13,7 +13,7 @@ class GetEmployeeStatusContagious:
     def __init__(
         self,
         employee: User,
-        repo: ContagiousHistoryRepository,
+        repo: ContagiousHistoryRepository
     ):
         self.employee = employee
         self.repository = repo

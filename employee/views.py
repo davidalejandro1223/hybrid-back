@@ -1,9 +1,10 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from employee.models import Policy
 from employee.serializers import WritePolicySerializer, GetPolicySerializer
-
+from employee.usecases import EmployeeLoader
 
 class ListCreatePolicy(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -33,4 +34,15 @@ class UpdateDeleteRetrievePolicy(generics.RetrieveUpdateDestroyAPIView):
             return WritePolicySerializer
         if self.request.method == "GET":
             return GetPolicySerializer
+
+class EmployeeLoaderView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        excel = request.data["excel_file"]
+        user = request.user
+        uc = EmployeeLoader(excel, user)
+        response, status = uc.execute()
+        return Response(data={'status': response}, status=status)
+
 

@@ -19,13 +19,3 @@ class BranchOfficeRepository:
 
         return BranchOffice.objects.filter(
             id__in=branch_offices)
-
-    def get_contagious_history_by_employee(
-        self, employee: User
-    ) -> DateField:
-
-        contagious_result = ContagiousHistory.objects.filter(
-            employee=employee
-        ).last().fecha_sintomas
-
-        return contagious_result

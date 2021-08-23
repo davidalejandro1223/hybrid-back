@@ -17,3 +17,13 @@ class ContagiousHistoryRepository:
         return ContagiousHistory.objects.filter(
             employee=employee,pcr_result='P'
         ).last()
+
+    def get_contagious_date_by_employee(
+        self, employee: User
+    ) -> DateField:
+
+        contagious_result = ContagiousHistory.objects.filter(
+            employee=employee
+        ).last().fecha_sintomas
+
+        return contagious_result

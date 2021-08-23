@@ -1,13 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
 from datetime import datetime
-User = get_user_model()
-
+from users.models import User
 
 class Country(models.Model):
-    nombre = models.CharField(max_length=250)
+	nombre = models.CharField(max_length=250)
 
+	def __str__(self):
+		return self.nombre
 
 class Location(models.Model):
     LEVELS = [
@@ -43,6 +42,9 @@ class BranchOfficeConfig(models.Model):
 	block_branch_office = models.BooleanField(default=False)
 	created_date = models.DateTimeField(auto_now_add=True)
 
+	def __str__(self):
+		return f"{self.branchoffice_set.first()} config"
+
 
 class BranchOffice(models.Model):
     name = models.CharField(max_length=250)
@@ -55,7 +57,7 @@ class BranchOffice(models.Model):
     location = models.ForeignKey(
     	Location,related_name='branchoffice_location_id',on_delete=models.CASCADE)
     branch_office_config = models.ForeignKey(
-    	BranchOfficeConfig,related_name='branchoffice_branchofficeconfig_id',on_delete=models.CASCADE)
+    	BranchOfficeConfig,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -63,7 +65,7 @@ class BranchOffice(models.Model):
 
 
 class Contract(models.Model):
-	employee = models.ManyToManyField(User)
+	employee = models.ForeignKey(User, on_delete=models.CASCADE)
 	company = models.ForeignKey(
 		Company,related_name='contract_company_id',on_delete=models.CASCADE)
 	job_title = models.CharField(max_length=250)
@@ -73,8 +75,8 @@ class Contract(models.Model):
 	end_date = models.DateField(
 	    blank=True, null=True, verbose_name="fecha fin de contratación") 
 	#assigned_area = models.ForeignKey(Company,related_name='contract_area_id',on_delete=models.CASCADE)
-	created_date = models.DateTimeField(auto_now_add=True)
 	branch_offices = models.ManyToManyField(BranchOffice)
+	created_date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 	    return f'{self.company}: {self.employee} - ({self.job_title})'
