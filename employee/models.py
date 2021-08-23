@@ -33,7 +33,7 @@ class Policy(models.Model):
 
     DAYS_OF_THE_WEEK = (
         ('Mon. ', 'Monday'),
-        ('Tue. ', 'Tuesday.'),
+        ('Tue. ', 'Tuesday'),
         ('Wed. ', 'Wednesday'),
         ('Thu. ', 'Thursday'),
         ('Fri. ', 'Friday'),

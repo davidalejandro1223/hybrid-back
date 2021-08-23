@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import PermissionsMixin
 # Create your models here.
 
 from .managers import CustomUserManager
@@ -23,6 +22,9 @@ class User(AbstractUser):
     ]
 
     objects = CustomUserManager()
+
+    def get_company(self):
+        return self.contract_set.order_by("-end_date").first().company
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.user_identification}"
