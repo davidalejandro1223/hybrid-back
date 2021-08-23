@@ -2,15 +2,20 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from employee.models import Policy
 from users.models import User
 from employee.serializers import (
     WritePolicySerializer,
     GetPolicySerializer,
-    EmployeeProfileSerializer
+    EmployeeProfileSerializer,
+    EmployeeSerializer
 )
+
 from employee.usecases import EmployeeLoader
+from users.models import User
+from infrastructure.models import Contract
 
 class ListCreatePolicy(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -51,6 +56,16 @@ class EmployeeLoaderView(generics.CreateAPIView):
         response, status = uc.execute()
         return Response(data={'status': response}, status=status)
 
+class GetEmployeesAPIView(ModelViewSet):
+    serializer_class = EmployeeSerializer
+    
+    def get_queryset(self):
+        return User.objects.filter(contract__company=self.request.user.get_company())
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["company"] = self.request.user.get_company()
+        return context
 
 class EmployeeProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
