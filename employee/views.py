@@ -42,7 +42,7 @@ class EmployeeLoaderView(generics.CreateAPIView):
         excel = request.data["excel_file"]
         user = request.user
         uc = EmployeeLoader(excel, user)
-        response = uc.execute()
-        return Response(data={'status': response}, status=status.HTTP_200_OK)
+        response, status = uc.execute()
+        return Response(data={'status': response}, status=status)
 
 

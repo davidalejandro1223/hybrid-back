@@ -3,8 +3,10 @@ from datetime import datetime
 from users.models import User
 
 class Country(models.Model):
-    nombre = models.CharField(max_length=250)
+	nombre = models.CharField(max_length=250)
 
+	def __str__(self):
+		return self.nombre
 
 class Location(models.Model):
     LEVELS = [
@@ -39,6 +41,9 @@ class BranchOfficeConfig(models.Model):
 	block_branch_office = models.BooleanField(default=False)
 	created_date = models.DateTimeField(auto_now_add=True)
 
+	def __str__(self):
+		return f"{self.branchoffice_set.first()} config"
+
 
 class BranchOffice(models.Model):
     name = models.CharField(max_length=250)
@@ -51,7 +56,7 @@ class BranchOffice(models.Model):
     location = models.ForeignKey(
     	Location,related_name='branchoffice_location_id',on_delete=models.CASCADE)
     branch_office_config = models.ForeignKey(
-    	BranchOfficeConfig,related_name='branchoffice_branchofficeconfig_id',on_delete=models.CASCADE)
+    	BranchOfficeConfig,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

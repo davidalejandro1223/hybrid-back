@@ -25,7 +25,7 @@ class EmployeeLoader:
                     name__in=data["Sucursales"].split(", ")
                 )
                 if not branch_offices:
-                    return "No se encontraron las sucursales"
+                    return "No se encontraron las sucursales", 400
             
             if data["Área"] and branch_offices:
                 area = Area.objects.filter(
@@ -33,7 +33,7 @@ class EmployeeLoader:
                     branch_office__in=branch_offices
                 ).first()
             else:
-                return "No se puede asignar un area sin una sucursal"
+                return "No se puede asignar un area sin una sucursal", 400
             
             if data["Recurso"] and area:
                 resource = Resource.objects.filter(
@@ -41,7 +41,7 @@ class EmployeeLoader:
                     area = area
                 ).first()
             else:
-                return "No se puede asignar un recurso sin un area"
+                return "No se puede asignar un recurso sin un area", 400
             
             if data["Puesto"] and resource:
                 seat = Seat.objects.filter(
@@ -49,7 +49,7 @@ class EmployeeLoader:
                     id_in_area = data["Puesto"]
                 ).first()
             else:
-                return "No se puede asignar un puesto sin un recurso"
+                return "No se puede asignar un puesto sin un recurso", 400
             
             translated_days = self.convert_language_days(data["Jornada"].split(", "))
             
@@ -88,7 +88,7 @@ class EmployeeLoader:
             )
             policy.save()
 
-        return "Trabajadores creados correctamente"   
+        return "Trabajadores creados correctamente", 200   
 
     
     def convert_language_days(self, days):
@@ -108,9 +108,3 @@ class EmployeeLoader:
             if day[0] in days:
                 translated_days.append(day[1])
         return translated_days
-
-
-            
-
-            
-            
