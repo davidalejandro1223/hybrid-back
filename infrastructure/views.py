@@ -15,6 +15,7 @@ from infrastructure.usecases.branch_office import (
     GetBranchOffices,
     BranchOfficeLoader
 )
+from infrastructure.usecases.area import AreaLoader
 from .serializers import (BranchOfficeSerializer, ReservaSerializer)
 
 
@@ -44,5 +45,15 @@ class BranchOfficeLoaderAPIView(CreateAPIView):
         user = request.user
         excel_file = request.data["excel_file"]
         uc = BranchOfficeLoader(user, excel_file)
+        response, status = uc.execute()
+        return Response(data={"status":response}, status=status)
+
+class AreaLoaderAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        excel_file = request.data["excel_file"]
+        uc = AreaLoader(user, excel_file)
         response, status = uc.execute()
         return Response(data={"status":response}, status=status)
