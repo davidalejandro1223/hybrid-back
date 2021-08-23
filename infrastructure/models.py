@@ -1,6 +1,7 @@
 from django.db import models
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from users.models import User
+import math
 
 class Country(models.Model):
 	nombre = models.CharField(max_length=250)
@@ -98,35 +99,57 @@ class Area(models.Model):
 	branch_office = models.ForeignKey(BranchOffice, on_delete=models.CASCADE)
 	created_date = models.DateTimeField(auto_now_add=True)
 	
-	def get_time_block_by_time(self, datetime):
+	def get_time_block_by_time(self, check_datetime):
 		area_config = self.areaconfig_set.filter(active=True).order_by('-created_date').first()
-		start_time = area_config.start_date
-		end_time = area_config.end_date
-		cant_hours = end_time - start_time
+		start_time = timedelta(hours=area_config.start_date.hour, minutes=area_config.start_date.minute)
+		end_time = timedelta(hours=area_config.end_date.hour, minutes=area_config.end_date.minute)
+		cant_hours = (end_time - start_time).seconds/3600
 		block_time = cant_hours / 4
 		delta = timedelta(hours=block_time)
 		for i in range(0,4):
 			start_block = start_time + (delta*i)
-			end_block = start_time + (start_block + delta)
-			if datetime.time() > start_block and datetime.time() < end_block:
-				return start_block, end_block
+			end_block = start_block + delta
+			
+			start_minutes, start_hours = math.modf(start_block.seconds/3600)
+			start_hours = int(start_hours)
+			start_minutes = int(start_minutes * 60)
+
+			end_minutes, end_hours = math.modf(end_block.seconds/3600)
+			end_hours = int(end_hours)
+			end_minutes = int(end_minutes * 60)
+
+			start_datetime = datetime.combine(check_datetime.date(), time(hour=start_hours, minute=start_minutes))
+			end_datetime = datetime.combine(check_datetime.date(), time(hour=end_hours, minute=end_minutes))
+
+			if check_datetime > start_datetime and check_datetime < end_datetime:
+				return start_datetime.time(), end_datetime.time()
 		return None
 	
 	def get_time_blocks(self):
 		time_blocks = []
 		area_config = self.areaconfig_set.filter(active=True).order_by('-created_date').first()
-		start_time = area_config.start_date
-		end_time = area_config.end_date
-		cant_hours = end_time - start_time
+		start_time = timedelta(hours=area_config.start_date.hour, minutes=area_config.start_date.minute)
+		end_time = timedelta(hours=area_config.end_date.hour, minutes=area_config.end_date.minute)
+		cant_hours = (end_time - start_time).seconds/3600
 		block_time = cant_hours / 4
 		delta = timedelta(hours=block_time)
 		for i in range(0,4):
 			start_block = start_time + (delta*i)
-			end_block = start_time + (start_block + delta)
+			end_block = start_block + delta
+			
+			start_datetime = datetime.combine(datetime.now().date, time(hour=start_block.seconds/3600))
+			end_datetime = datetime.combine(datetime.now().date, time(hour=end_block.seconds/3600))
 			time_blocks.append({
-				f"bloque{i+1}":{"start_time":start_block, "end_time":end_block}
+				f"bloque{i+1}":{"start_time":start_datetime.time, "end_time":end_datetime.time}
 			})
 		return time_blocks
+	
+	@property
+	def area_config(self):
+		return self.areaconfig_set.filter(active=True).order_by('-created_date').first()
+
+	def __str__(self):
+		return f'{self.name}: {self.available} - {self.maximun_capacity}'
 
 class AreaConfig(models.Model):
 	FASES = [
@@ -151,8 +174,7 @@ class AreaConfig(models.Model):
 	created_date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return f'{self.name}: {self.available} - {self.maximun_capacity}'
-
+		return f'{self.area.name}-{self.fase}: {self.active} - {self.maximun_capacity}'
 			
 
 class Resource(models.Model):

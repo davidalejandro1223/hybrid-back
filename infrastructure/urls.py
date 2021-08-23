@@ -6,7 +6,7 @@ from .views import (
     BranchOfficeListAPIView,
     BranchOfficeLoaderAPIView,
     AreaLoaderAPIView,
-    #BookingStatusAPIView,
+    BookingStatusAPIView,
     ContagiousHistoryView
 )
 
@@ -18,6 +18,6 @@ urlpatterns = [
     path("infrastructure/employee-branch-office",BranchOfficeListAPIView.as_view()),
     path("infrastructure/branch-office/loader", BranchOfficeLoaderAPIView.as_view()),
     path("infrastructure/areas/loader", AreaLoaderAPIView.as_view()),
-    #path("infrastructure/branch-office/<int:branch_office_id>/booking-status", BookingStatusAPIView.as_view())
+    path("infrastructure/branch-office/<int:branch_office_id>/booking-status", BookingStatusAPIView.as_view())
 ]
 urlpatterns += router.urls
