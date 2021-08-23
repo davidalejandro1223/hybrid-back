@@ -1,22 +1,41 @@
 from rest_framework.response import Response
 from rest_framework import status, filters
+from rest_framework import generics
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 
-from infrastructure.models import (Country,Location,Company,BranchOfficeConfig,BranchOffice,
-    Contract,AreaConfig,Resource,Area,Reserva
+from users.models import User
+from infrastructure.models import (
+    Country,
+    Location,
+    Company,
+    BranchOfficeConfig,
+    BranchOffice,
+    Contract,
+    AreaConfig,
+    Resource,
+    Area,
+    Reserva
 )
+from employee.models import (
+    ContagiousHistory,
+    Policy
+)
+from infrastructure.usecases.area import AreaLoader
+from infrastructure.usecases.contagious_history import GetEmployeeStatusContagious
 from infrastructure.repositories.branch_office import BranchOfficeRepository
+from infrastructure.repositories.contagious_history import ContagiousHistoryRepository
 from infrastructure.usecases.branch_office import (
     GetBranchOffices,
     BranchOfficeLoader
 )
-from infrastructure.usecases.area import AreaLoader
-from .serializers import (BranchOfficeSerializer, ReservaSerializer)
+from .serializers import (
+    BranchOfficeSerializer,
+    ReservaSerializer,
+    ContagiousHistoryStatusSerializer,
+    ContagiousHistoryUpdateSerializer
+)
 
 
 class BranchOfficeViewSet(ModelViewSet):
@@ -29,20 +48,38 @@ class BranchOfficeViewSet(ModelViewSet):
         )
 
 
-class BranchOfficeListAPIView(ListAPIView):
+class BranchOfficeListAPIView(generics.ListAPIView):
     serializer_class = BranchOfficeSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         employee = self.request.query_params.get("employee_id")
         #company = self.request.query_params.get("company_id")
-        repo = BranchOfficeRepository()
+        repo = BranchOfficeRepository(),ContagiousHistoryRepository()
         uc_response = GetBranchOffices(
             employee, repo).execute()
 
         return uc_response
 
-class BranchOfficeLoaderAPIView(CreateAPIView):
+
+class ContagiousHistoryView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return ContagiousHistoryUpdateSerializer
+        if self.request.method == "GET":
+            return ContagiousHistoryStatusSerializer
+
+    def get_object(self):
+        employee = self.kwargs["employee_pk"]
+        repo = ContagiousHistoryRepository()
+        uc_response = GetEmployeeStatusContagious(
+            employee, repo).execute()
+        return uc_response
+
+
+class BranchOfficeLoaderAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -52,7 +89,8 @@ class BranchOfficeLoaderAPIView(CreateAPIView):
         response, status = uc.execute()
         return Response(data={"status":response}, status=status)
 
-class AreaLoaderAPIView(CreateAPIView):
+
+class AreaLoaderAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -61,3 +99,4 @@ class AreaLoaderAPIView(CreateAPIView):
         uc = AreaLoader(user, excel_file)
         response, status = uc.execute()
         return Response(data={"status":response}, status=status)
+

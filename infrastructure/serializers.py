@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from infrastructure.models import (Country,Location,Company,BranchOfficeConfig,BranchOffice,
-    Contract,AreaConfig,Resource,Area,Reserva
+    Contract,AreaConfig,Resource,Area,Reserva,
 )
+from employee.models import (ContagiousHistory)
 
 User = get_user_model()
 
@@ -24,3 +25,12 @@ class ReservaSerializer(serializers.Serializer):
     branch_office = BranchOfficeSerializer(read_only=True)
 
 
+class ContagiousHistoryStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContagiousHistory
+        exclude = ['created_date']
+
+class ContagiousHistoryUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContagiousHistory
+        fields = ['pcr_result']
