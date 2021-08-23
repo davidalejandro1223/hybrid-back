@@ -8,7 +8,7 @@ from .views import (
     AreaLoaderAPIView,
     ContagiousHistoryView,
     #AreaListAPIView,
-    ContagiousHistoryCreateAPIView
+    ContagiousHistoryCreateAPIView,
     BookingStatusAPIView,
 )
 

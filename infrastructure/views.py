@@ -37,7 +37,7 @@ from .serializers import (
     ReservaSerializer,
     ContagiousHistoryStatusSerializer,
     ContagiousHistoryUpdateSerializer,
-    AreaSerializer
+    AreaSerializer,
     BookingStatusSerializer
 )
 
