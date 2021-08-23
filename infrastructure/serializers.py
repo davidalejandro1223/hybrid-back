@@ -14,7 +14,8 @@ class BranchOfficeSerializer(serializers.Serializer):
     location = serializers.CharField(read_only=True)
     address = serializers.CharField(read_only=True)
     available_capacity = serializers.IntegerField(read_only=True)
-    assigned_capacity = serializers.IntegerField(read_only=True)    
+    assigned_capacity = serializers.IntegerField(read_only=True)
+
 
 class ReservaSerializer(serializers.Serializer):
     fijo = serializers.BooleanField(read_only=True)
@@ -29,10 +30,19 @@ class ContagiousHistoryStatusSerializer(serializers.ModelSerializer):
         model = ContagiousHistory
         exclude = ['created_date']
 
+
 class ContagiousHistoryUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContagiousHistory
         fields = ['pcr_result']
+
+
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = ['created_date']
+
+
 class MinEmployeeSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -63,5 +73,3 @@ class AreaSerializer(serializers.Serializer):
 class BookingStatusSerializer(BranchOfficeSerializer):
     fase = serializers.CharField()
     areas = AreaSerializer(many=True)
-
-

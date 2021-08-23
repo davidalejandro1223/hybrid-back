@@ -37,6 +37,7 @@ from .serializers import (
     ReservaSerializer,
     ContagiousHistoryStatusSerializer,
     ContagiousHistoryUpdateSerializer,
+    AreaSerializer,
     BookingStatusSerializer
 )
 
@@ -63,6 +64,11 @@ class BranchOfficeListAPIView(generics.ListAPIView):
             employee, repo).execute()
 
         return uc_response
+
+
+class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
+    serializer_class = ContagiousHistoryStatusSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ContagiousHistoryView(generics.RetrieveUpdateDestroyAPIView):
