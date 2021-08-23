@@ -20,9 +20,13 @@ from .serializers import (BranchOfficeSerializer, ReservaSerializer)
 
 
 class BranchOfficeViewSet(ModelViewSet):
-    queryset = BranchOffice.objects.all()
     serializer_class = BranchOfficeSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BranchOffice.objects.filter(
+            company=self.request.user.get_company()
+        )
 
 
 class BranchOfficeListAPIView(ListAPIView):
