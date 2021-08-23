@@ -91,6 +91,9 @@ class Contract(models.Model):
 	def __str__(self):
 	    return f'{self.company}: {self.employee} - ({self.job_title})'
 
+	@property
+	def active(self):
+		return datetime.now().date() < self.end_date
 
 class Area(models.Model):
 	name = models.CharField(max_length=250)

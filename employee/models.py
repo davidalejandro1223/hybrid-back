@@ -31,7 +31,7 @@ class ContagiousHistory(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
 class Policy(models.Model):
-
+    
     DAYS_OF_THE_WEEK = (
         ('Mon. ', 'Monday'),
         ('Tue. ', 'Tuesday'),
