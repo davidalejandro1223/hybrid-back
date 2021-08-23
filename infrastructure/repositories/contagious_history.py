@@ -24,6 +24,7 @@ class ContagiousHistoryRepository:
 
         contagious_result = ContagiousHistory.objects.filter(
             employee=employee
-        ).last().fecha_sintomas
+        ).last()
 
-        return contagious_result
+        if contagious_result:
+            return contagious_result.fecha_sintomas

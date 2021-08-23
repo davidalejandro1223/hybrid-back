@@ -6,7 +6,8 @@ from datetime import datetime
 from infrastructure.models import (
     Area,
     Resource,
-    Seat
+    Seat,
+    BranchOffice
 )
 
 User = get_user_model()
@@ -47,6 +48,7 @@ class Policy(models.Model):
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE, blank=True, null=True)
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE, blank=True, null=True)
     days_of_the_week = models.CharField(verbose_name="dias de asistencia", max_length=50, blank=True, null=True)
+    branch_office_favorited = models.ForeignKey(BranchOffice, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

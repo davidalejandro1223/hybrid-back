@@ -38,24 +38,27 @@ class GetBranchOffices:
             self.employee
         )
 
-        contagious_history_date = self.repository[1].get_contagious_date_by_employee(
-            self.employee
-        )
+        if available_branch_offices:
+            contagious_history_date = self.repository[1].get_contagious_date_by_employee(
+                self.employee
+            )
 
-        if contagious_history_date:
-            branch_offices_without_risk = [] 
-            for branch_office in available_branch_offices:
-                config_days = branch_office.branch_office_config.maximun_request_days_contagious
-                risk_days = contagious_history_date + timedelta(days=config_days)
+            if contagious_history_date:
+                branch_offices_without_risk = []
+                for branch_office in available_branch_offices:
+                    config_days = branch_office.branch_office_config.maximun_request_days_contagious
+                    risk_days = contagious_history_date + timedelta(days=config_days)
 
-                # Aún está en riesgo de contagio para esta sucursal
-                if risk_days > date.today():
-                    continue
-                else:
-                    branch_offices_without_risk.append(branch_office)
-            return branch_offices_without_risk
-        else:
-            return available_branch_offices
+                    # Aún está en riesgo de contagio para esta sucursal
+                    if risk_days > date.today():
+                        continue
+                    else:
+                        branch_offices_without_risk.append(branch_office)
+                return branch_offices_without_risk
+            else:
+                return available_branch_offices
+
+        return available_branch_offices
 
 
 class BranchOfficeLoader:
