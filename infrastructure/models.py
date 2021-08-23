@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+from datetime import datetime, timedelta
 from users.models import User
 
 class Country(models.Model):
@@ -9,18 +9,27 @@ class Country(models.Model):
 		return self.nombre
 
 class Location(models.Model):
-    LEVELS = [
+	FASES = [
+		("FASEI", 'Fase I'),
+		("FASEII", 'Fase II'),
+		("FASEIII", 'Fase III'),
+		("FASEIV", 'Fase IV'),
+		("FASEV", 'Fase V'),
+		("Sin fase", "Sin fase")
+	]    
+	LEVELS = [
         ("COMUNA", 'Comuna')
     ]
-    nombre = models.CharField(max_length=250)
-    country = models.ForeignKey(
+	fase = models.CharField(max_length=250,choices=FASES)
+	nombre = models.CharField(max_length=250)
+	country = models.ForeignKey(
     	Country,related_name='location_country_id',on_delete=models.CASCADE)
-    admnistrative_level = models.CharField(
+	admnistrative_level = models.CharField(
 		max_length=20,
 		choices=LEVELS)
 
-    def __str__(self):
-        return self.nombre
+	def __str__(self):
+		return self.nombre
 
 
 class Company(models.Model):
@@ -36,8 +45,8 @@ class BranchOfficeConfig(models.Model):
 	    blank=True, null=True, verbose_name="hora jornada inicio")
 	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada fin")
-	maximun_request_days_contagious = models.IntegerField(
-		default=14,verbose_name="dias de cuarentena/riesgo establecidos por sucursal")
+	maximun_request_days_contagious = models.IntegerField(default=14)
+	days_to_review_contagious = models.IntegerField()
 	notify_branch_office = models.BooleanField(default=False)
 	block_branch_office = models.BooleanField(default=False)
 	created_date = models.DateTimeField(auto_now_add=True)
@@ -82,6 +91,43 @@ class Contract(models.Model):
 	    return f'{self.company}: {self.employee} - ({self.job_title})'
 
 
+class Area(models.Model):
+	name = models.CharField(max_length=250)
+	available = models.BooleanField(default=True)
+	maximun_capacity = models.IntegerField(default=0)
+	branch_office = models.ForeignKey(BranchOffice, on_delete=models.CASCADE)
+	created_date = models.DateTimeField(auto_now_add=True)
+	
+	def get_time_block_by_time(self, datetime):
+		area_config = self.areaconfig_set.filter(active=True).order_by('-created_date').first()
+		start_time = area_config.start_date
+		end_time = area_config.end_date
+		cant_hours = end_time - start_time
+		block_time = cant_hours / 4
+		delta = timedelta(hours=block_time)
+		for i in range(0,4):
+			start_block = start_time + (delta*i)
+			end_block = start_time + (start_block + delta)
+			if datetime.time() > start_block and datetime.time() < end_block:
+				return start_block, end_block
+		return None
+	
+	def get_time_blocks(self):
+		time_blocks = []
+		area_config = self.areaconfig_set.filter(active=True).order_by('-created_date').first()
+		start_time = area_config.start_date
+		end_time = area_config.end_date
+		cant_hours = end_time - start_time
+		block_time = cant_hours / 4
+		delta = timedelta(hours=block_time)
+		for i in range(0,4):
+			start_block = start_time + (delta*i)
+			end_block = start_time + (start_block + delta)
+			time_blocks.append({
+				f"bloque{i+1}":{"start_time":start_block, "end_time":end_block}
+			})
+		return time_blocks
+
 class AreaConfig(models.Model):
 	FASES = [
 		("FASEI", 'Fase I'),
@@ -99,21 +145,15 @@ class AreaConfig(models.Model):
 	    blank=True, null=True, verbose_name="hora jornada area inicio")
 	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada area fin")
+	active = models.BooleanField(default=False)
+	area = models.ForeignKey(Area, models.CASCADE)
 	maximun_request_days_ahead = models.IntegerField(default=8)	
 	created_date = models.DateTimeField(auto_now_add=True)
 
-class Area(models.Model):
-	name = models.CharField(max_length=250)
-	available = models.BooleanField(default=True)
-	maximun_capacity = models.IntegerField(default=0)
-	branch_area_config = models.ForeignKey(
-		AreaConfig,related_name='area_areaConfig_id',on_delete=models.CASCADE)
-	branch_office = models.ForeignKey(BranchOffice, on_delete=models.CASCADE)
-	created_date = models.DateTimeField(auto_now_add=True)
-
-
 	def __str__(self):
 		return f'{self.name}: {self.available} - {self.maximun_capacity}'
+
+			
 
 class Resource(models.Model):
 	TIPO = [
@@ -153,18 +193,20 @@ class Reserva(models.Model):
 	    ("CANCELADA", 'Cancelada')	    
 	]
 	fijo = models.BooleanField(default=False)
-	start_date = models.TimeField(
-	    blank=True, null=True, verbose_name="hora jornada")
-	end_date = models.TimeField(
-	    blank=True, null=True, verbose_name="hora jornada")
+	start_date = models.DateTimeField(
+	    blank=True, null=True, verbose_name="fecha y hora inicio jornada")
+	end_date = models.DateTimeField(
+	    blank=True, null=True, verbose_name="fecha y hora fin jornada")
 	status = models.CharField(
 		max_length=100,
 		choices=ESTADO)
-	employee = models.ManyToManyField(User)
+	employee = models.ForeignKey(User, on_delete=models.CASCADE)
 	branch_office = models.ForeignKey(
 		BranchOffice,related_name='reserva_branchoffice_id',on_delete=models.CASCADE)
 	area = models.ForeignKey(
 		Area,related_name='reserva_area_id',on_delete=models.CASCADE)	
+	resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+	seat = models.ForeignKey(Seat, on_delete=models.CASCADE, null=True)
 	created_date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
