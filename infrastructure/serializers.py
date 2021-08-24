@@ -57,13 +57,13 @@ class ReservasByEmployeeSerializer(serializers.Serializer):
         from django.db.models import Count,Sum
 
         branch_office = obj.branch_office.id
-        branch_office_current_capacity = 0
         branch_office_current_capacity = Area.objects.filter(
             branch_office=branch_office
         ).values('maximun_capacity').annotate(
             total=Count('maximun_capacity')
         ).order_by().aggregate(Sum('maximun_capacity'))
-
+        if not branch_office_current_capacity['maximun_capacity__sum']:
+            return 0
         return branch_office_current_capacity['maximun_capacity__sum']
 
     def get_reservas_confirmadas_sucursal(self, obj):
