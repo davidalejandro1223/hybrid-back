@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -24,3 +26,10 @@ class ActivateUser(APIView):
         user.is_active = True
         user.save()
         return Response(data={"status": "contraseña asignada correctamente"})
+
+class UserDataAPIView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user

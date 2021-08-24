@@ -52,6 +52,8 @@ class EmployeeProfileSerializer(serializers.Serializer):
     mobility_permit = serializers.FileField(read_only=True)
     policy = GetPolicySerializer(source='policy_user_id.first')
     is_infected = serializers.SerializerMethodField(read_only=True)
+    is_company_admin = serializers.BooleanField(read_only=True)
+    is_worker = serializers.BooleanField(read_only=True)
 
     def get_is_infected(self, obj):
         contagious_history = None
