@@ -34,13 +34,33 @@ class ReservasByEmployeeSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     branch_office_id = serializers.IntegerField(source='branch_office.id')
     start_date = serializers.DateTimeField(read_only=True,format="%Y-%m-%d")
-    #block_time = serializers.CharField(default="Medio día")
+    block_time = serializers.SerializerMethodField(read_only=True)
+    turno = serializers.SerializerMethodField(read_only=True)
     branch_office = serializers.CharField(source='branch_office.name')
     total_attendes = serializers.SerializerMethodField(read_only=True)
     area = serializers.CharField(source='area.name')
     branch_office_current_capacity = serializers.SerializerMethodField(read_only=True)
     reservas_confirmadas_sucursal = serializers.SerializerMethodField(read_only=True)
     seat = serializers.CharField(read_only=True,source='seat.id')
+
+    def get_block_time(self,obj):
+        duracion_reserva = abs((obj.start_date - obj.end_date).total_seconds())
+        inicio_jornada = obj.branch_office.branch_office_config.start_date
+        fin_jornada = obj.branch_office.branch_office_config.end_date
+        duracion_jornada = fin_jornada.hour - inicio_jornada.hour
+        medio_turno_jornada = (duracion_jornada / 2 ) * 3600
+        #import pdb;pdb.set_trace()
+        if duracion_reserva <= medio_turno_jornada:
+            return "Medio Turno"
+        else:
+            return "Turno Completo"
+
+    def get_turno(self,obj):
+        turno = obj.end_date.strftime("%p")
+        if turno == 'AM':
+            return "Mañana"
+        else:
+            return "Tarde"
 
     def get_total_attendes(self, obj):
         get_attendes = Reserva.objects.filter(
