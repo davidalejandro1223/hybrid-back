@@ -17,6 +17,11 @@ class BranchOfficeSerializer(serializers.Serializer):
     assigned_capacity = serializers.IntegerField(read_only=True)
 
 
+class AttendesByBranchOfficeSerializer(serializers.Serializer):
+    first_name = serializers.CharField(source='employee.first_name')
+    last_name = serializers.CharField(source='employee.last_name')
+
+
 class ReservaSerializer(serializers.Serializer):
     fijo = serializers.BooleanField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
