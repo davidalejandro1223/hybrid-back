@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import timedelta, timezone, datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +20,7 @@ from employee.usecases import EmployeeLoader
 from users.models import User
 from infrastructure.models import Contract, Reserva
 from infrastructure.repositories.contagious_history import ContagiousHistoryRepository
+from infrastructure.serializers import ReservasByEmployeeSerializer
 
 class ListCreatePolicy(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -135,3 +136,28 @@ class NotifyCovidCaseAPI(APIView):
                 return Response(data={'status':"El ultimo reporte del usuario no indica PCR positivo"}, status=200)
         except AttributeError:
             return Response(data={'status':"El usuario no tiene reporte por covid"}, status=200)
+
+class UpdateReservaStatus(APIView):
+    serializer_class = ReservasByEmployeeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, reserva_pk):
+        try:
+            reserva = Reserva.objects.get(id=reserva_pk)
+        except:
+            return Response(data={"status": f"No existe la reserva con id {reserva_pk}"}, status=400)
+        
+        if not request.user == reserva.employee: 
+            return Response(data={"status": "No puede modificar una reserva de otra persona"}, status=400)
+        
+        action = request.query_params["action"]
+        if action == "CONFIRMADA":
+            now = datetime.now()
+            confirm_window = reserva.start_date - timedelta(minutes=5)
+            if confirm_window > now:
+                return Response(data={"status": "Solo se puede confirmar una reserva 5 minutos antes de su inicio"}, status=400)
+        reserva.status = action
+        reserva.save()
+
+        return Response(data={"status": f"Reserva {action.capitalize()}"}, status=200)
+
