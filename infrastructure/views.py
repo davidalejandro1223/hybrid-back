@@ -40,7 +40,9 @@ from .serializers import (
     ContagiousHistoryUpdateSerializer,
     AreaSerializer,
     BookingStatusSerializer,
-    AttendesByBranchOfficeSerializer
+    AttendesByBranchOfficeSerializer,
+    LocationSerializer,
+    CountrySerializer
 )
 from infrastructure.tasks import send_email
 
@@ -52,7 +54,24 @@ class BranchOfficeViewSet(ModelViewSet):
         return BranchOffice.objects.filter(
             company=self.request.user.get_company()
         )
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["company"] = self.request.user.get_company()
+        return context
 
+class LocationListAPIView(generics.ListAPIView):
+    serializer_class = LocationSerializer
+    permissions_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        country = self.kwargs['country_id']
+        return Location.objects.filter(country_id=country)
+
+class CountryListAPIView(generics.ListAPIView):
+    serializer_class = CountrySerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Country.objects.all()
 
 class BranchOfficeListAPIView(generics.ListAPIView):
     serializer_class = BranchOfficeSerializer

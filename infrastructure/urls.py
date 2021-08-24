@@ -10,7 +10,9 @@ from .views import (
     #AreaListAPIView,
     ContagiousHistoryCreateAPIView,
     BookingStatusAPIView,
-    AttendesByBranchOfficeListAPIView
+    AttendesByBranchOfficeListAPIView,
+    LocationListAPIView,
+    CountryListAPIView
 )
 
 router = DefaultRouter()
@@ -24,6 +26,8 @@ urlpatterns = [
     #path("infrastructure/employee-area",AreaListAPIView.as_view()),
     path("infrastructure/branch-office/loader", BranchOfficeLoaderAPIView.as_view()),
     path("infrastructure/areas/loader", AreaLoaderAPIView.as_view()),
-    path("infrastructure/branch-office/<int:branch_office_id>/booking-status", BookingStatusAPIView.as_view())
+    path("infrastructure/branch-office/<int:branch_office_id>/booking-status", BookingStatusAPIView.as_view()),
+    path("infrastructure/country", CountryListAPIView.as_view()),
+    path("infrastructure/<int:country_id>/location", LocationListAPIView.as_view()),
 ]
 urlpatterns += router.urls
