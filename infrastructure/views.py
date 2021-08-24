@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 from users.models import User
 from infrastructure.models import (
@@ -38,9 +39,9 @@ from .serializers import (
     ContagiousHistoryStatusSerializer,
     ContagiousHistoryUpdateSerializer,
     AreaSerializer,
-    BookingStatusSerializer
+    BookingStatusSerializer,
+    AttendesByBranchOfficeSerializer
 )
-
 
 class BranchOfficeViewSet(ModelViewSet):
     serializer_class = BranchOfficeSerializer
@@ -64,6 +65,19 @@ class BranchOfficeListAPIView(generics.ListAPIView):
             employee, repo).execute()
 
         return uc_response
+
+class AttendesByBranchOfficeListAPIView(generics.ListAPIView):
+    serializer_class = AttendesByBranchOfficeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        pk_branch_office = self.kwargs["branch_office_pk"]
+        branch_office = get_object_or_404(
+            BranchOffice,id=pk_branch_office
+        )
+        attendes = Reserva.objects.filter(
+            branch_office=branch_office,status='CONFIRMADA')
+        return attendes
 
 
 class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
