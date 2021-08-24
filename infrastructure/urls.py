@@ -15,7 +15,8 @@ from .views import (
     LocationListAPIView,
     CountryListAPIView,
     CreateListAreaAPIView,
-    RetrieveUpdateDestroyAreaAPIView
+    RetrieveUpdateDestroyAreaAPIView,
+    ReservasByEmployeeListAPIView
 )
 
 router = DefaultRouter()
@@ -26,6 +27,7 @@ urlpatterns = [
     path("employee/contagious_history",ContagiousHistoryCreateAPIView.as_view()),
     path("infrastructure/employee-branch-office",BranchOfficeListAPIView.as_view()),
     path("infrastructure/branch-office/<int:branch_office_pk>/attendees-by-branch",AttendesByBranchOfficeListAPIView.as_view()),
+    path("infrastructure/employee/<int:employee_pk>/reservas",ReservasByEmployeeListAPIView.as_view()),
     #path("infrastructure/employee-area",AreaListAPIView.as_view()),
     path("infrastructure/branch-office/loader", BranchOfficeLoaderAPIView.as_view()),
     path("infrastructure/areas/loader", AreaLoaderAPIView.as_view()),
