@@ -93,7 +93,7 @@ class ReservasByEmployeeListAPIView(generics.ListAPIView):
         reservas = Reserva.objects.filter(
             status='ASIGNADA',
             employee=employee
-        )
+        ).order_by('-start_date')
         return reservas
 
 
