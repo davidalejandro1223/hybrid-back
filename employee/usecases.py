@@ -73,15 +73,16 @@ class EmployeeLoader:
             contract.save()
             contract.branch_offices.set(branch_offices)
 
-            policy = Policy(
-                employee = employee,
-                area = area,
-                resource = resource,
-                seat = seat,
-                days_of_the_week = translated_days,
-                assigned_by_admin = True
-            )
-            policy.save()
+            if area or resource or seat or translated_days:
+                policy = Policy(
+                    employee = employee,
+                    area = area,
+                    resource = resource,
+                    seat = seat,
+                    days_of_the_week = translated_days,
+                    assigned_by_admin = True
+                )
+                policy.save()
 
         return "Trabajadores creados correctamente", 200   
 
