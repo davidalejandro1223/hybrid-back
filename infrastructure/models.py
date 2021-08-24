@@ -126,7 +126,7 @@ class Area(models.Model):
 
 			if check_datetime > start_datetime and check_datetime < end_datetime:
 				return start_datetime.time(), end_datetime.time()
-		return None
+		return None, None
 	
 	def get_time_blocks(self):
 		time_blocks = []
