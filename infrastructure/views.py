@@ -42,7 +42,7 @@ from .serializers import (
     BookingStatusSerializer,
     AttendesByBranchOfficeSerializer
 )
-#from infrastructure.tasks import send_email
+from infrastructure.tasks import send_email
 
 class BranchOfficeViewSet(ModelViewSet):
     serializer_class = BranchOfficeSerializer
@@ -85,8 +85,7 @@ class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
     serializer_class = ContagiousHistoryStatusSerializer
     permission_classes = [IsAuthenticated]
 
-    def dispatch(self, request, *args, **kwargs):
-        #import pdb;pdb.set_trace()
+    def post(self, request, *args, **kwargs):
         pk_employee = request.data["employee"]
         employee = get_object_or_404(
             User,id=pk_employee
@@ -95,7 +94,14 @@ class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
         admin = Contract.objects.filter(
             company=company,employee__is_company_admin=True
         ).first().employee
-        #send_email(employee,admin)
+        data = {}
+        data["sender"] = employee
+        data["admin"] = admin
+        data["reported_date"] = request.data["fecha_reporte"]
+        data["template_file"] = 'covid_admin_notification.html'
+        data["message_description"] = 'Notificación Covid'
+        data["subject"] = f'{employee.first_name} {employee.last_name} ha reportado Covid'
+        send_email(data)
         return Response(data={"msj": "Email enviado"}, status=status.HTTP_200_OK)
 
 
