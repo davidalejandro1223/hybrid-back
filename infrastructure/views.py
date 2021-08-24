@@ -40,7 +40,8 @@ from .serializers import (
     ContagiousHistoryUpdateSerializer,
     AreaSerializer,
     BookingStatusSerializer,
-    AttendesByBranchOfficeSerializer
+    AttendesByBranchOfficeSerializer,
+    ReservasByEmployeeSerializer
 )
 from infrastructure.tasks import send_email
 
@@ -79,6 +80,21 @@ class AttendesByBranchOfficeListAPIView(generics.ListAPIView):
         attendes = Reserva.objects.filter(
             branch_office=branch_office,status='CONFIRMADA')
         return attendes
+
+class ReservasByEmployeeListAPIView(generics.ListAPIView):
+    serializer_class = ReservasByEmployeeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        pk_employee = self.kwargs["employee_pk"]
+        employee = get_object_or_404(
+            User,id=pk_employee
+        )
+        reservas = Reserva.objects.filter(
+            status='ASIGNADA',
+            employee=employee
+        )
+        return reservas
 
 
 class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
