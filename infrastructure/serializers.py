@@ -107,10 +107,10 @@ class ContagiousHistoryUpdateSerializer(serializers.ModelSerializer):
         fields = ['pcr_result']
 
 
-class AreaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Area
-        fields = ['created_date']
+# class AreaSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Area
+#         fields = ['created_date']
 
 
 class MinEmployeeSerializer(serializers.Serializer):
@@ -132,13 +132,63 @@ class AreaConfigSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AreaSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=250)
     available = serializers.BooleanField()
     maximun_capacity = serializers.IntegerField(source='area_config.maximun_capacity')
-    assigned_capacity = serializers.IntegerField()
+    assigned_capacity = serializers.IntegerField(required=False)
     area_config = AreaConfigSerializer()
-    employees_booked = MinReservaSerializer(many=True)
+    employees_booked = MinReservaSerializer(many=True, required=False)
+
+class WriteAreaConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+            model = AreaConfig
+            exclude = ["area"]
+
+class WriteAreaSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=250)
+    available = serializers.BooleanField()
+    maximun_capacity = serializers.IntegerField()
+    area_config = WriteAreaConfigSerializer(many=True, write_only=True)
+
+    def create(self, validated_data):
+        area_config_data = validated_data.pop("area_config")
+        validated_data["branch_office_id"] = self.context["branch_id"]
+        area = Area(**validated_data)
+        area.save()
+
+        for config in area_config_data:
+            config["area"] = area
+            area_config = AreaConfig(**config)
+            area_config.save()
+        
+        current_fase = area.branch_office.location.fase
+        fase_area_config = area.areaconfig_set.filter(fase=current_fase).first()
+        fase_area_config.active = True
+        fase_area_config.save()
+        
+        return area
+    
+    def update(self, instance, validated_data):
+        areas_config_data = validated_data.pop("area_config")
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        areas_config = instance.areaconfig_set.all()
+        for area_config_data in areas_config_data:
+            fase = area_config_data["fase"]
+            area_config = areas_config.get(fase=fase)
+            for attr, value in area_config_data.items():
+                setattr(area_config, attr, value)
+            area_config.save()
+        return instance
+
+
+class MultiAreaSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=250)
+    available = serializers.BooleanField()
+    maximun_capacity = serializers.IntegerField()
+    area_config = WriteAreaConfigSerializer(many=True, source='areaconfig_set')
 
 class BookingStatusSerializer(BranchOfficeSerializer):
     fase = serializers.CharField()

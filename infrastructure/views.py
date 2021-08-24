@@ -42,7 +42,9 @@ from .serializers import (
     BookingStatusSerializer,
     AttendesByBranchOfficeSerializer,
     LocationSerializer,
-    CountrySerializer
+    CountrySerializer,
+    WriteAreaSerializer,
+    MultiAreaSerializer
 )
 from infrastructure.tasks import send_email
 
@@ -171,3 +173,46 @@ class BookingStatusAPIView(generics.ListAPIView):
         serializer = BookingStatusSerializer(data)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+# class AreasViewSet(ModelViewSet):
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         company = self.request.user.get_company()
+#         return Area.objects.filter(branch_office__company=company)
+    
+#     def get_serializer_class(self):
+#         if self.request.method in ['PUT','POST']:
+#             return WriteAreaSerializer
+#         return AreaSerializer
+
+class CreateListAreaAPIView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Area.objects.filter(branch_office_id=self.kwargs["branch_office"])
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return WriteAreaSerializer
+        return AreaSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["branch_id"] = self.kwargs["branch_office"]
+        return context
+
+class RetrieveUpdateDestroyAreaAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Area.objects.filter(branch_office_id=self.kwargs["branch_office"])
+    
+    def get_serializer_class(self):
+        if self.request.method =='PUT':
+            return WriteAreaSerializer
+        return MultiAreaSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["branch_id"] = self.kwargs["branch_office"]
+        return context 
