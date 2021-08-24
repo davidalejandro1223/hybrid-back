@@ -47,7 +47,7 @@ class BranchOfficeConfig(models.Model):
 	end_date = models.TimeField(
 	    blank=True, null=True, verbose_name="hora jornada fin")
 	maximun_request_days_contagious = models.IntegerField(default=14)
-	days_to_review_contagious = models.IntegerField()
+	days_to_review_contagious = models.IntegerField(default=0)
 	notify_branch_office = models.BooleanField(default=False)
 	block_branch_office = models.BooleanField(default=False)
 	created_date = models.DateTimeField(auto_now_add=True)
@@ -194,7 +194,6 @@ class AreaConfig(models.Model):
 		("FASEII", 'Fase II'),
 		("FASEIII", 'Fase III'),
 		("FASEIV", 'Fase IV'),
-		("FASEV", 'Fase V'),
 		("Sin fase", "Sin fase")
 	]    
 	fase = models.CharField(max_length=250,choices=FASES)

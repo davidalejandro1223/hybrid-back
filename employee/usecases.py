@@ -35,23 +35,18 @@ class EmployeeLoader:
             else:
                 return "No se puede asignar un area sin una sucursal", 400
             
-            if data["Recurso"] and area:
-                resource = Resource.objects.filter(
-                    name = data["Recurso"],
-                    area = area
-                ).first()
-            else:
-                return "No se puede asignar un recurso sin un area", 400
-            
-            if data["Puesto"] and resource:
+            if data["Puesto"] and area:
                 seat = Seat.objects.filter(
-                    resource = resource,
+                    resource__area = area,
                     id_in_area = data["Puesto"]
                 ).first()
+                resource = seat.resource
             else:
-                return "No se puede asignar un puesto sin un recurso", 400
+                return "No se puede asignar un puesto sin un area", 400
             
-            translated_days = self.convert_language_days(data["Jornada"].split(", "))
+            translated_days = []
+            if data["Jornada"]:
+                translated_days = self.convert_language_days(data["Jornada"].split(", "))
             
             minimum_attendance = data["Minimo Dias Asistencia"]
             if not minimum_attendance:
@@ -71,7 +66,7 @@ class EmployeeLoader:
                 employee = employee,
                 company = self.user.get_company(),
                 job_title = data["Cargo"],
-                minimum_attendance = minimum_attendance,
+                minimum_attendance = minimum_attendance or 0,
                 start_date = data["Fecha Inicio Contrato"],
                 end_date = data["Fecha Termino Contrato"],
             )

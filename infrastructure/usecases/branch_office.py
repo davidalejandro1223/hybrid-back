@@ -72,7 +72,7 @@ class BranchOfficeLoader:
 
         for index, data in excel_df.iterrows():
             country, created = Country.objects.get_or_create(
-                nombre = data["País"]
+                nombre = data["País"].capitalize()
             )
             
             location = Location.objects.filter(
@@ -86,8 +86,8 @@ class BranchOfficeLoader:
             branch_office_config = BranchOfficeConfig(
                 start_date = data["Hora Inicio Jornada"],
                 end_date = data["Hora Fin Jornada"],
-                maximun_request_days_contagious = data["Dias a revisar en caso contagio"],
-                notify_branch_office = True if data["Notificar sucursal en caso contagio"] == "s" else False
+                maximun_request_days_contagious = data["Días Cuarentena"],
+                days_to_review_contagious = data["Días Notificación Trabajador PCR +"]
             )
             branch_office_config.save()
             
