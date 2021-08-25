@@ -1,0 +1,884 @@
+{
+	"info": {
+		"_postman_id": "3c8b68fa-62f6-4430-8086-c9c1d7f9b1c8",
+		"name": "hackaton",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"Raul\",\n    \"last_name\": \"Castro\",\n    \"email\": \"estoesotrocorreo@correo.com\",\n    \"user_identification\": \"5531223322\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/users/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activate account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"jwt_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGF2aWRhbGVqYW5kcm8xMjIzQGhvdG1haWwuY29tIiwiZXhwIjoxNjI5ODQ5MTc2LCJ0eXBlIjoiZW1haWxfY29uZmlybWF0aW9uIn0.2Ae7k9oasPDE1dn8JuYfcmYVn70Dp_Ng9hQXmNUa3yo\",\n    \"password\":\"haloplatino\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/users/activate-account",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"activate-account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Policy",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 35c95afc7922949a2c09976549be3674de0998f6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"area\": 2,\n    \"employee\": 4,\n    \"resource\": null,\n    \"seat\":4,\n    \"days_of_the_week\": [\n        \"Monday\",\n        \"Friday\"\n    ],\n    \"assigned_by_admin\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee/4/policy",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						"4",
+						"policy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List policy",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 35c95afc7922949a2c09976549be3674de0998f6",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/employee/4/policy",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						"4",
+						"policy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin@admin.com\",\n    \"password\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get policy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 35c95afc7922949a2c09976549be3674de0998f6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"area\": 2,\n    \"employee\": 4,\n    \"resource\": 1,\n    \"seat\": 2,\n    \"days_of_the_week\": [\n        \"Monday\",\n        \"Friday\"\n    ],\n    \"assigned_by_admin\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee/4/policy/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						"4",
+						"policy",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "carga empleados",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "excel_file",
+							"type": "file",
+							"src": "/home/david/Descargas/Cargador_Trabajadores.xlsx"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee/loader",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						"loader"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "carga sucursales",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "excel_file",
+							"type": "file",
+							"src": "/home/david/Descargas/Carga_sucursal.xlsx"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/loader",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"loader"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "carga areas",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "excel_file",
+							"type": "file",
+							"src": "/home/david/Descargas/Carga_Areas.xlsx"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/areas/loader",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"areas",
+						"loader"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get sucursales",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "estado por sucursal",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/1/booking-status",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"1",
+						"booking-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lista empleados por empresa",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/employee/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create empleado",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"contract\": {\n        \"job_title\": \"des\",\n        \"minimum_attendance\": 2,\n        \"start_date\": \"2021-07-01\",\n        \"end_date\": \"2021-10-02\",\n        \"branch_offices\": [\n            {\n                \"id\": 1,\n                \"name\": \"principal\",\n                \"location\": \"Las condes\",\n                \"address\": \"hendaya 60\"\n            },\n            {\n                \"id\": 2,\n                \"name\": \"secundaria\",\n                \"location\": \"Las condes\",\n                \"address\": \"fdf\"\n            }\n        ]\n    },\n    \"first_name\": \"creado api\",\n    \"last_name\": \"creado api\",\n    \"user_identification\": \"admin\",\n    \"email\": \"wfnbxeglf@trythe.net\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit empleado",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"contract\": {\n        \"job_title\": \"desqq\",\n        \"minimum_attendance\": 3,\n        \"start_date\": \"2021-07-01\",\n        \"end_date\": \"2021-10-02\",\n        \"branch_offices\": [\n            {\n                \"id\": 1,\n                \"name\": \"principal\",\n                \"location\": \"Las condes\",\n                \"address\": \"hendaya 60\"\n            }\n        ]\n    },\n    \"first_name\": \"creado api\",\n    \"last_name\": \"creado api\",\n    \"user_identification\": \"admin\",\n    \"email\": \"wfnbxeglf@trythe.net\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user basic data",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/users/basic-data",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"basic-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get locacion por pais",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/1/location",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"1",
+						"location"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get paises",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/country",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"country"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CRUD sucursal",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"carga api\",\n    \"location\": 2,\n    \"address\": \"hendaya 60\",\n    \"branch_office_config\": {\n        \"start_date\": \"06:00:00\",\n        \"end_date\": \"18:00:00\",\n        \"maximun_request_days_contagious\": 14,\n        \"days_to_review_contagious\": 8,\n        \"notify_branch_office\": true\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/9/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"9",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CRUD area",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Area carga api 1\",\n    \"available\": true,\n    \"maximun_capacity\": 23,\n    \"area_config\": [\n        {\n            \"fase\": \"Sin fase\",\n            \"maximun_capacity\": 21,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 18,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEI\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEII\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEIII\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEIV\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/1/area/16",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"1",
+						"area",
+						"16"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "confirmar cancelar reserva",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/employee/reserva/4?action=CANCELADA",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						"reserva",
+						"4"
+					],
+					"query": [
+						{
+							"key": "action",
+							"value": "CANCELADA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get reportes",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/1/covid-report",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"1",
+						"covid-report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get location by company",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/company/location",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"company",
+						"location"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit fase in location",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fase\": \"FASEI\",\n    \"nombre\": \"Las condes\",\n    \"admnistrative_level\": \"COMUNA\",\n    \"country\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/company/location/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"company",
+						"location",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "estado por sucursal",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token eeb781d3b2bfc997fa930a1da392a59db65b2e26",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/1/booking-status",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"1",
+						"booking-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lista empleados por empresa",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/api/employee/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit empleado",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"contract\": {\n        \"job_title\": \"desqq\",\n        \"minimum_attendance\": 3,\n        \"start_date\": \"2021-07-01\",\n        \"end_date\": \"2021-10-02\",\n        \"branch_offices\": [\n            {\n                \"id\": 1,\n                \"name\": \"principal\",\n                \"location\": \"Las condes\",\n                \"address\": \"hendaya 60\"\n            }\n        ]\n    },\n    \"first_name\": \"creado api\",\n    \"last_name\": \"creado api\",\n    \"user_identification\": \"admin\",\n    \"email\": \"wfnbxeglf@trythe.net\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/employee/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"employee",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CRUD area",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 47a4904ecf77a875e649839226fb3f168d8f0ed7",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Area carga api 1\",\n    \"available\": true,\n    \"maximun_capacity\": 23,\n    \"area_config\": [\n        {\n            \"fase\": \"Sin fase\",\n            \"maximun_capacity\": 21,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 18,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEI\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEII\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEIII\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        },\n        {\n            \"fase\": \"FASEIV\",\n            \"maximun_capacity\": 20,\n            \"immobile_spaces\": 3,\n            \"flexible_spaces\": 17,\n            \"start_date\": \"06:00:00\",\n            \"end_date\": \"18:00:00\",\n            \"active\": false,\n            \"maximun_request_days_ahead\": 8\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/infrastructure/branch-office/1/area",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"infrastructure",
+						"branch-office",
+						"1",
+						"area"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token auth",
+			"value": "Authorization"
+		}
+	]
+}
