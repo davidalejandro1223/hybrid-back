@@ -1,11 +1,14 @@
+import io
 from rest_framework.response import Response
 from rest_framework import status, filters
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
 import pandas as pd
 from users.models import User
 from infrastructure.models import (
@@ -235,13 +238,15 @@ class RetrieveUpdateDestroyAreaAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class CovidReportAPIView(APIView):
     def get(self, request, branch_office):
+        branch_office = BranchOffice.objects.get(id=branch_office)
         now = datetime.now().replace(second=0, microsecond=0)
         full_reservas = Reserva.objects.filter(
             start_date__lte=now,
-            branch_office_id=branch_office
+            branch_office=branch_office
         )
         
-        employees = full_reservas.distinct("employee").values("employee")
+        employees = full_reservas.distinct("employee").values_list("employee", flat=True)
+        employees = User.objects.filter(id__in=employees)
         
         data_full_reservas = full_reservas.values(
             "employee__first_name",
@@ -265,4 +270,52 @@ class CovidReportAPIView(APIView):
                 "Puesto",
                 "Estado"
         ]
-        pass
+
+        list_risk_reservas = []
+        for employee in employees:
+            last_report = ContagiousHistoryRepository().get_last_contagious_history(employee)
+            try:
+                if last_report.pcr_result =='P':
+                    days_to_review_contagious = branch_office.days_to_review_contagious
+                    notify_since = last_report.fecha_reporte - timedelta(days=days_to_review_contagious)
+                    reservas_infected_employee = Reserva.objects.filter(
+                        start_date__gte = notify_since,
+                        branch_office = branch_office,
+                        status__in = ['CONFIRMADA', 'ASIGNADA'],
+                        employee = employee
+                    )
+                    
+                    for reserva_employee in reservas_infected_employee:
+                        risk_reservas = Reserva.objects.filter(
+                            start_date__lte = reserva_employee.start_date,
+                            end_date__gte = reserva_employee.end_date,
+                            branch_office = branch_office,
+                            status__in = ['ASIGNADA', 'CONFIRMADA']
+                        )
+                        for reserva in risk_reservas:
+                            list_risk_reservas.append({
+                                "Contagiado": employee,
+                                "Fecha sintomas": last_report.fecha_sintomas,
+                                "Fecha PCR positivo": last_report.fecha_reporte,
+                                "Trabajador": reserva.employee,
+                                "Fecha de contacto (inicio)": reserva.start_date,
+                                "Fecha de contacto (fin)": reserva.end_date,
+                                "Sucursal":reserva.branch_office,
+                                "Area": reserva.area,
+                                "Puesto": reserva.puesto
+                            })
+            except:
+                pass
+        
+        df_infected = pd.DataFrame(list_risk_reservas)
+        buffer = io.BytesIO()
+        writer =  pd.ExcelWriter(buffer)
+        df_reservas.to_excel(writer, sheet_name="Reservas")
+        df_infected.to_excel(writer, sheet_name="Trazabilidad")
+        writer.save()
+        buffer.seek(0)
+        
+        response = HttpResponse(buffer, content_type='application/msexcel')
+        response['Content-Disposition'] = 'attachment; filename="reporte-covid.xlsx"'
+        return response
+        

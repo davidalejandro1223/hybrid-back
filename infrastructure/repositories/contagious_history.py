@@ -30,4 +30,4 @@ class ContagiousHistoryRepository:
             return contagious_result.fecha_sintomas
     
     def get_last_contagious_history(self, employee: User):
-        return ContagiousHistory.objects.filter(employee=employee).order_by("created").last()
+        return ContagiousHistory.objects.filter(employee=employee).order_by("created_date").last()
