@@ -184,7 +184,7 @@ class Area(models.Model):
 			start_datetime =  time(hour=start_hours, minute=start_minutes)
 			end_datetime =  time(hour=end_hours, minute=end_minutes)
 			time_blocks.append({
-				f"bloque {i+4}":{"start_time":start_datetime.time(), "end_time":end_datetime.time()}
+				f"bloque {i+4}":{"start_time":start_datetime, "end_time":end_datetime}
 			})
 		return time_blocks
 	
@@ -270,7 +270,7 @@ class Reserva(models.Model):
 		BranchOffice,related_name='reserva_branchoffice_id',on_delete=models.CASCADE)
 	area = models.ForeignKey(
 		Area,related_name='reserva_area_id',on_delete=models.CASCADE)	
-	resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+	resource = models.ForeignKey(Resource, on_delete=models.CASCADE, null=True)
 	seat = models.ForeignKey(Seat, on_delete=models.CASCADE, null=True)
 	created_date = models.DateTimeField(auto_now_add=True)
 

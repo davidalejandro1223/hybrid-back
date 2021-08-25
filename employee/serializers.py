@@ -1,11 +1,11 @@
-from infrastructure.models import BranchOffice, Contract
+from infrastructure.models import BranchOffice, Contract, Seat
 from rest_framework import serializers
 
 from users.models import User
 from employee.models import Policy, Resource, ContagiousHistory
 from users.serializers import UserSerializer
 from infrastructure.serializers import BranchOfficeSerializer
-
+from employee.usecases import GenerateReservasWithPolicy
 class MinAreaSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=250)
@@ -38,6 +38,20 @@ class WritePolicySerializer(serializers.ModelSerializer):
     days_of_the_week = serializers.ListField(
         child=serializers.CharField(max_length=200)
     )
+
+    def create(self, validated_data):
+        if validated_data["seat"]:
+            seat = Seat.objects.filter(
+                    resource__area_id = validated_data["area"],
+                    id_in_area = validated_data["seat"].id
+                ).first()
+            validated_data["seat"]=seat
+            validated_data["resource"]=seat.resource
+        policy = super().create(validated_data)
+        if policy.seat and policy.assigned_by_admin:
+            GenerateReservasWithPolicy(policy).execute()
+        return policy
+
     class Meta:
         model = Policy
         exclude = ['created', 'updated']
