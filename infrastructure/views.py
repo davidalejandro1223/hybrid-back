@@ -1,12 +1,15 @@
+import io
 from rest_framework.response import Response
 from rest_framework import status, filters
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from django.utils import timezone
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+import pandas as pd
 from users.models import User
 from infrastructure.models import (
     Country,
@@ -41,6 +44,10 @@ from .serializers import (
     AreaSerializer,
     BookingStatusSerializer,
     AttendesByBranchOfficeSerializer,
+    LocationSerializer,
+    CountrySerializer,
+    WriteAreaSerializer,
+    MultiAreaSerializer,
     ReservasByEmployeeSerializer
 )
 from infrastructure.tasks import send_email
@@ -53,7 +60,24 @@ class BranchOfficeViewSet(ModelViewSet):
         return BranchOffice.objects.filter(
             company=self.request.user.get_company()
         )
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["company"] = self.request.user.get_company()
+        return context
 
+class LocationListAPIView(generics.ListAPIView):
+    serializer_class = LocationSerializer
+    permissions_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        country = self.kwargs['country_id']
+        return Location.objects.filter(country_id=country)
+
+class CountryListAPIView(generics.ListAPIView):
+    serializer_class = CountrySerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Country.objects.all()
 
 class BranchOfficeListAPIView(generics.ListAPIView):
     serializer_class = BranchOfficeSerializer
@@ -163,8 +187,135 @@ class BookingStatusAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, branch_office_id):
-        uc = GetBranchOfficeBookingStatus(branch_office_id, timezone.now().replace(second=0, microsecond=0))
+        uc = GetBranchOfficeBookingStatus(branch_office_id, datetime.now().replace(second=0, microsecond=0))
         data = uc.execute()
         serializer = BookingStatusSerializer(data)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+# class AreasViewSet(ModelViewSet):
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         company = self.request.user.get_company()
+#         return Area.objects.filter(branch_office__company=company)
+    
+#     def get_serializer_class(self):
+#         if self.request.method in ['PUT','POST']:
+#             return WriteAreaSerializer
+#         return AreaSerializer
+
+class CreateListAreaAPIView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Area.objects.filter(branch_office_id=self.kwargs["branch_office"])
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return WriteAreaSerializer
+        return AreaSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["branch_id"] = self.kwargs["branch_office"]
+        return context
+
+class RetrieveUpdateDestroyAreaAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Area.objects.filter(branch_office_id=self.kwargs["branch_office"])
+    
+    def get_serializer_class(self):
+        if self.request.method =='PUT':
+            return WriteAreaSerializer
+        return MultiAreaSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["branch_id"] = self.kwargs["branch_office"]
+        return context 
+
+class CovidReportAPIView(APIView):
+    def get(self, request, branch_office):
+        branch_office = BranchOffice.objects.get(id=branch_office)
+        now = datetime.now().replace(second=0, microsecond=0)
+        full_reservas = Reserva.objects.filter(
+            start_date__lte=now,
+            branch_office=branch_office
+        )
+        
+        employees = full_reservas.distinct("employee").values_list("employee", flat=True)
+        employees = User.objects.filter(id__in=employees)
+        
+        data_full_reservas = full_reservas.values(
+            "employee__first_name",
+            "employee__last_name",
+            "start_date",
+            "end_date",
+            "branch_office__name",
+            "area__name",
+            "seat__id_in_area",
+            "status",
+        )
+        
+        df_reservas = pd.DataFrame(list(data_full_reservas))
+        df_reservas.columns = [
+                "Nombres Trabajador", 
+                "Apellidos Trabajador",
+                "Fecha inicio reserva",
+                "Fecha fin reserva",
+                "Sucursal",
+                "Area",
+                "Puesto",
+                "Estado"
+        ]
+
+        list_risk_reservas = []
+        for employee in employees:
+            last_report = ContagiousHistoryRepository().get_last_contagious_history(employee)
+            try:
+                if last_report.pcr_result =='P':
+                    days_to_review_contagious = branch_office.days_to_review_contagious
+                    notify_since = last_report.fecha_reporte - timedelta(days=days_to_review_contagious)
+                    reservas_infected_employee = Reserva.objects.filter(
+                        start_date__gte = notify_since,
+                        branch_office = branch_office,
+                        status__in = ['CONFIRMADA', 'ASIGNADA'],
+                        employee = employee
+                    )
+                    
+                    for reserva_employee in reservas_infected_employee:
+                        risk_reservas = Reserva.objects.filter(
+                            start_date__lte = reserva_employee.start_date,
+                            end_date__gte = reserva_employee.end_date,
+                            branch_office = branch_office,
+                            status__in = ['ASIGNADA', 'CONFIRMADA']
+                        )
+                        for reserva in risk_reservas:
+                            list_risk_reservas.append({
+                                "Contagiado": employee,
+                                "Fecha sintomas": last_report.fecha_sintomas,
+                                "Fecha PCR positivo": last_report.fecha_reporte,
+                                "Trabajador": reserva.employee,
+                                "Fecha de contacto (inicio)": reserva.start_date,
+                                "Fecha de contacto (fin)": reserva.end_date,
+                                "Sucursal":reserva.branch_office,
+                                "Area": reserva.area,
+                                "Puesto": reserva.puesto
+                            })
+            except:
+                pass
+        
+        df_infected = pd.DataFrame(list_risk_reservas)
+        buffer = io.BytesIO()
+        writer =  pd.ExcelWriter(buffer)
+        df_reservas.to_excel(writer, sheet_name="Reservas")
+        df_infected.to_excel(writer, sheet_name="Trazabilidad")
+        writer.save()
+        buffer.seek(0)
+        
+        response = HttpResponse(buffer, content_type='application/msexcel')
+        response['Content-Disposition'] = 'attachment; filename="reporte-covid.xlsx"'
+        return response
+        

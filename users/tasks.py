@@ -28,8 +28,8 @@ def send_confirmation_email(user):
     print('enviando..')
     
     verification_token = gen_verification_token(user)
-    subject = 'Bienvenido {}! Verifica tu cuenta para participar en el sorteo'.format(user.first_name)
-    from_email = 'Sorteo papel de por vida! <noreply@sorteopapel.com>'
+    subject = 'Bienvenido {}! Verifica tu cuenta'.format(user.first_name)
+    from_email = 'Hybrid by talana <noreply@hybrid.com>'
     verification_url = f"?code={verification_token}" #reverse_lazy('users:verify_account', kwargs={'token':verification_token})
     
     content = render_to_string(

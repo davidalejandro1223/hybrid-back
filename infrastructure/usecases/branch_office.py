@@ -115,6 +115,8 @@ class GetBranchOfficeBookingStatus:
         for area in areas:
             start_block, end_block = area.get_time_block_by_time(self.datetime_to_check)
             if not start_block and not end_block:
+                area.assigned_capacity = 0
+                area.employees_booked = 0
                 continue
             start_block_date = self.datetime_to_check.replace(hour=start_block.hour, minute=start_block.minute)
             end_block_date = self.datetime_to_check.replace(hour=end_block.hour, minute=end_block.minute)

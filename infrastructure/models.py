@@ -15,7 +15,6 @@ class Location(models.Model):
 		("FASEII", 'Fase II'),
 		("FASEIII", 'Fase III'),
 		("FASEIV", 'Fase IV'),
-		("FASEV", 'Fase V'),
 		("Sin fase", "Sin fase")
 	]    
 	LEVELS = [
