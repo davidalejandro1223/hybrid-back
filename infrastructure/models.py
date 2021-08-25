@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta, time
+
+from django.db.models.aggregates import Sum
 from users.models import User
 import math
 
@@ -56,21 +58,27 @@ class BranchOfficeConfig(models.Model):
 
 
 class BranchOffice(models.Model):
-    name = models.CharField(max_length=250)
-    company = models.ForeignKey(
-    	Company,related_name='branchoffice_company_id',on_delete=models.CASCADE)
+	name = models.CharField(max_length=250)
+	company = models.ForeignKey(
+		Company,related_name='branchoffice_company_id',on_delete=models.CASCADE)
 	#lat = models.DecimalField(max_digits=22, decimal_places=16, blank=False, null=True)
 	#lng = models.DecimalField(max_digits=22, decimal_places=16, blank=False, null=True)
 	#position = models.PointField(null=True, blank=False)
-    address = models.CharField(max_length=250)
-    location = models.ForeignKey(
-    	Location,related_name='branchoffice_location_id',on_delete=models.CASCADE)
-    branch_office_config = models.ForeignKey(
-    	BranchOfficeConfig,on_delete=models.CASCADE)
-    created_date = models.DateTimeField(auto_now_add=True)
+	address = models.CharField(max_length=250)
+	location = models.ForeignKey(
+		Location,related_name='branchoffice_location_id',on_delete=models.CASCADE)
+	branch_office_config = models.ForeignKey(
+		BranchOfficeConfig,on_delete=models.CASCADE)
+	created_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.name}'
+	@property
+	def current_immobile_spaces(self):
+		sum_total = self.area_set.all().aggregate(Sum("areaconfig__immobile_spaces"))
+		return sum_total["areaconfig__immobile_spaces__sum"]
+	
+	
+	def __str__(self):
+		return f'{self.name}'
 
 
 class Contract(models.Model):

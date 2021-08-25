@@ -22,3 +22,17 @@ def send_email(data):
         [data["admin"].email])
     email.attach_alternative(content, 'text/html')
     email.send()
+
+def send_cancel_email_by_fase(user):
+    subject = 'Cancelacion de reservas por cambio de fase'
+    from_email = 'Hybrid <noreply@hybrid.com>'
+    
+    content = render_to_string(
+        'emails/users/cancel_booking.html',
+        {'user': user}
+    )
+    
+    msg = EmailMultiAlternatives(subject, content, from_email, [user.email])
+    msg.content_subtype = 'html'
+    msg.attach_alternative(content, "text/html")
+    msg.send()

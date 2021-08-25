@@ -50,7 +50,7 @@ from .serializers import (
     MultiAreaSerializer,
     ReservasByEmployeeSerializer
 )
-from infrastructure.tasks import send_email
+from infrastructure.tasks import send_email, send_cancel_email_by_fase
 
 class BranchOfficeViewSet(ModelViewSet):
     serializer_class = BranchOfficeSerializer
@@ -68,7 +68,7 @@ class BranchOfficeViewSet(ModelViewSet):
 
 class LocationListAPIView(generics.ListAPIView):
     serializer_class = LocationSerializer
-    permissions_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         country = self.kwargs['country_id']
@@ -318,4 +318,55 @@ class CovidReportAPIView(APIView):
         response = HttpResponse(buffer, content_type='application/msexcel')
         response['Content-Disposition'] = 'attachment; filename="reporte-covid.xlsx"'
         return response
-        
+
+class LocationsByCompanyAPIView(generics.ListAPIView):
+    serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        company = self.request.user.get_company()
+        return Location.objects.filter(branchoffice_location_id__company=company).distinct()
+
+class ChangeFaseInLocation(generics.UpdateAPIView):
+    serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Location.objects.all()
+    
+    def put(self, request, pk):
+        response = super().put(request, pk)
+        location = self.get_object()
+        branch_offices = BranchOffice.objects.filter(
+            location = location,
+            company = self.request.user.get_company()
+        )
+        cancel_since = datetime.now().replace(hour=23, minute=50)
+
+        for branch_office in branch_offices:
+            
+            current_area_config = AreaConfig.objects.filter(
+                area__in=branch_office.area_set.all(),
+                active=True
+            ).update(active=False)
+            new_area_config = AreaConfig.objects.filter(
+                area__in=branch_office.area_set.all(),
+                fase=location.fase
+            ).update(active=True)
+            
+            policies = Policy.objects.filter(
+                branch_office_favorited=branch_office,
+                assigned_by_admin=True
+            )
+            if len(policies)>branch_office.current_immobile_spaces:
+                policies.update(assigned_by_admin=False)
+
+            cancel_reservas = Reserva.objects.filter(
+                start_date__gte=cancel_since,
+                branch_office = branch_office,
+                status__in =["ASIGNADA", "CONFIRMADA"]
+            )
+            cancel_reservas.update(status="CANCELADA")
+
+            for reserva in cancel_reservas:
+                send_cancel_email_by_fase(reserva.employee)
+
+        return response

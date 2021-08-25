@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title></title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta charset="utf-8">
+      <style type="text/css">
+         @media only screen and (max-width: 480px){
+         * {
+         box-sizing: border-box;
+         }
+         body {
+         margin-left: 0px;
+         margin-right: 0px;
+         padding: 0px !important;
+         background:#FFF !important;
+         }
+         .contentMail {
+         width:100% !important;
+         margin-top: 0px !important;
+         }
+         .headerMail{
+         width:100% !important;
+         padding-left: 20px !important;
+         padding-right: 20px !important;
+         }
+         .footerMail {
+         width:100% !important;
+         }
+         .boxMail{
+         display:block !important;
+         width:100% !important;
+         padding-left: 20px !important;
+         padding-right: 20px !important;
+         padding-top: 0px !important ;
+         }
+         .btn {
+         width: 100% !important;
+         }
+         .logoImg {
+         width: 100px !important;
+         }
+         .logoEmpresa {
+         width: 150px !important;
+         }
+         .footerMail p {
+         padding: 0px !important;
+         font-size: 13px !important;
+         }
+         .footerMail a {
+         padding: 0 !important;
+         font-size: 13px !important;
+         }
+         p {
+         margin-left: 0px !important;
+         margin-right: 0px !important;
+         font-size: 15px !important;
+         }
+         table {
+         margin: 20px 0 !important;
+         }
+         .imgMap {
+         margin: 20px 0 !important;
+         }
+         .contentTable {
+         margin: 10px 0 !important;
+         }
+         .footerMail {
+         background: #ffffff !important;
+         }
+         }
+      </style>
+   </head>
+   <body style="background:#F0F0F0; color:#212121; padding-top: 20px; font-family: arial, sans-serif;">
+      <table style="margin:40px auto; width:600px; background:#ffffff;" class="contentMail" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+            <td class="headerMail" style="padding:20px 0 0px; width:600px; background:#fff; text-align:center;">
+               <img src="https://i.ibb.co/ZKS1yzF/logo-Hybrid.png" style="margin-top:20px; margin-bottom: 10px;"  width="200px" class="logoImg" >
+            </td>
+         </tr>
+         <tr>
+            <td class="boxMail" style="padding:0px 0 30px; width:600px; background:#fff; text-align:center;">
+               <p style="font-size: 22px; font-weight: bold; color: #2222BF;">Hola {{ user.first_name }}</p><br>
+               <p style="text-align:center; margin: 0px 40px; color:#212121; font-size:16px; line-height: 26px;">
+                  Te queremos notificar que por el cambio de fase en la comuna donde tienes reservas, hemos tenido que
+                  cancelarlas para liberar el aforo y cumplir con las capacidades maximas establecidas por la nueva fase,
+                  te invitamos a realizar de nuevo tus reservas. <br><br> vuelve Hybrid <br></p>
+            </td>
+         </tr>
+         <tr>
+            <td style="background-color:#FE3C70; padding:0px; text-align: center;">
+               <img src="https://i.ibb.co/CMjJDm2/hybrid-Correo.png" style="margin: 0 auto; width: 100%; display: block;">	
+            </td>
+         </tr>
+         <tr>
+            <td class="footerMail" style="padding:15px 0; width:600px; background:#F0F0F0; text-align:center;">
+               <p style="color:#212121; font-size:13px; margin-bottom:0px; padding:0px;">Hecho con amor por </p>
+               <img src="http://talana.com/media/uploads/diseno/talana-logo.png" style="margin-top:10px"  width="70px" class="logoFooter" >
+            </td>
+         </tr>
+      </table>
+   </body>

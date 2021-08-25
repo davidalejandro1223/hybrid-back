@@ -10,9 +10,6 @@ import jwt
 from datetime import timedelta
 
 def notify_positive_covid(user):
-    """Envia correo de verificacion al usuario en cuestion"""
-    print('enviando..')
-    
     subject = 'Reporte positivo de caso de covid en la oficina'
     from_email = 'Hybrid <noreply@hybrid.com>'
     
