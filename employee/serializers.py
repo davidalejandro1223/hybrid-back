@@ -54,6 +54,7 @@ class EmployeeProfileSerializer(serializers.Serializer):
     is_infected = serializers.SerializerMethodField(read_only=True)
     is_company_admin = serializers.BooleanField(read_only=True)
     is_worker = serializers.BooleanField(read_only=True)
+    favorited_area = serializers.SerializerMethodField(read_only=True,default=None)
 
     def get_is_infected(self, obj):
         contagious_history = None
@@ -64,6 +65,13 @@ class EmployeeProfileSerializer(serializers.Serializer):
             return True
         else:
             return False
+
+    def get_favorited_area(self, obj):
+        favorited_area = Policy.objects.filter(
+            employee=obj
+        ).last()
+        if favorited_area and favorited_area.area:
+            return favorited_area.area.name
 
 
 class ContractSerializer(serializers.Serializer):

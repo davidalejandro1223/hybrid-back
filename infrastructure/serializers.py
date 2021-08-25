@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from rest_framework import serializers
@@ -39,9 +40,26 @@ class BranchOfficeSerializer(serializers.Serializer):
     branch_office_config = BranchOfficeConfigSerializer()
     available_capacity = serializers.IntegerField(read_only=True)
     assigned_capacity = serializers.IntegerField(read_only=True)
+    areas = serializers.SerializerMethodField(read_only=True)
     num_areas = serializers.IntegerField(source='area_set.count', read_only=True)
     total_capacity = serializers.SerializerMethodField(read_only=True)
 
+    def get_areas(self,obj):
+        areas_resulting = []
+        areas = Area.objects.filter(branch_office=obj.id,available=True)
+        for area in areas:
+            aux = {}
+            current_area_capacity = area.maximun_capacity
+            areas_reservas_confirmadas = Reserva.objects.filter(
+                branch_office=obj.id,status='CONFIRMADA',area=area).count()
+            # No se toma en cuenta la política, se hará al reservar 
+            if areas_reservas_confirmadas < current_area_capacity:
+                aux['id'] = area.id
+                aux['name'] = area.name
+                aux['time_block_by_time'] = area.get_time_block_by_time(timezone.now().replace(second=0, microsecond=0))
+                #aux['time_blocks'] = area.get_time_blocks()
+                areas_resulting.append(aux)
+        return areas_resulting
 
     def get_total_capacity(self, obj):
         maximun_capacity = obj.area_set.all().aggregate(Sum("maximun_capacity"))
@@ -95,6 +113,10 @@ class ReservaSerializer(serializers.Serializer):
     branch_office = BranchOfficeSerializer(read_only=True)
 
 
+class AttendesByBranchOfficeSerializer(serializers.Serializer):
+    first_name = serializers.CharField(source='employee.first_name')
+    last_name = serializers.CharField(source='employee.last_name')
+
 class ReservasByEmployeeSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     branch_office_id = serializers.IntegerField(source='branch_office.id')
@@ -114,7 +136,6 @@ class ReservasByEmployeeSerializer(serializers.Serializer):
         fin_jornada = obj.branch_office.branch_office_config.end_date
         duracion_jornada = fin_jornada.hour - inicio_jornada.hour
         medio_turno_jornada = (duracion_jornada / 2 ) * 3600
-        #import pdb;pdb.set_trace()
         if duracion_reserva <= medio_turno_jornada:
             return "Medio Turno"
         else:
