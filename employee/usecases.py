@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
 import pandas as pd
 
 from employee.models import Policy
-from infrastructure.models import Contract, Resource, Seat, Area, BranchOffice
+from infrastructure.models import Contract, Reserva, Resource, Seat, Area, BranchOffice
 from users.models import User
 from users.tasks import send_confirmation_email
 
@@ -83,6 +84,8 @@ class EmployeeLoader:
                     assigned_by_admin = True
                 )
                 policy.save()
+                if policy.seat:
+                    GenerateReservasWithPolicy(policy).execute()
 
         return "Trabajadores creados correctamente", 200   
 
@@ -104,3 +107,38 @@ class EmployeeLoader:
             if day[0] in days:
                 translated_days.append(day[1])
         return translated_days
+
+class GenerateReservasWithPolicy:
+    def __init__(self, policy):
+        self.policy = policy
+
+    def execute(self):
+        area = self.policy.area
+        seat = self.policy.seat
+        branch_office = area.branch_office
+        area_block = area.get_time_blocks()[0]["bloque 1"]
+        start_date = datetime.now().replace(
+            hour=area_block["start_time"].hour, 
+            minute=area_block["start_time"].minute
+        
+        )
+        end_date = datetime.now().replace(
+            hour=area_block["end_time"].hour, 
+            minute=area_block["end_time"].minute
+        
+        )
+        for i in range(0, 31):
+            start_date = start_date + timedelta(days=i)
+            end_date = end_date + timedelta(days=i)
+            reserva = Reserva(
+                fijo=True,
+                start_date=start_date,
+                end_date= end_date,
+                status="ASIGNADA",
+                employee=self.policy.employee,
+                branch_office=branch_office,
+                seat=seat,
+                area=area
+            )
+            reserva.save()
+
