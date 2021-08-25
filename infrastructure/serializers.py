@@ -217,6 +217,11 @@ class AreaConfigSerializer(serializers.ModelSerializer):
         model = AreaConfig
         fields = '__all__'
 
+class AreaAlternativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = ["id"]
+
 class AreaSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=250)

@@ -19,12 +19,14 @@ from .views import (
     ReservasByEmployeeListAPIView,
     CovidReportAPIView,
     LocationsByCompanyAPIView,
-    ChangeFaseInLocation
+    ChangeFaseInLocation,
+    AreaViewSet,
 )
 
 router = DefaultRouter()
 router.register(r"infrastructure/branch-office", BranchOfficeViewSet, basename="branchoffice")
-#router.register(r"infrastructure/<int:branch_office>/area", AreasViewSet, basename="areas")
+router.register(r"infrastructure/area", AreaViewSet, basename="area")
+
 urlpatterns = [
     path('infrastructure/employee/<int:employee_pk>/contagious_history',ContagiousHistoryView.as_view()),
     path("employee/contagious_history",ContagiousHistoryCreateAPIView.as_view()),

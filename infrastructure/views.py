@@ -48,7 +48,8 @@ from .serializers import (
     CountrySerializer,
     WriteAreaSerializer,
     MultiAreaSerializer,
-    ReservasByEmployeeSerializer
+    ReservasByEmployeeSerializer,
+    AreaAlternativeSerializer
 )
 from infrastructure.tasks import send_email, send_cancel_email_by_fase
 
@@ -65,6 +66,22 @@ class BranchOfficeViewSet(ModelViewSet):
         context = super().get_serializer_context()
         context["company"] = self.request.user.get_company()
         return context
+
+class AreaViewSet(ModelViewSet):
+    serializer_class = AreaAlternativeSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Area.objects.all()
+
+    def partial_update(self, request, *args, **kwargs):
+        pk_area = self.kwargs["pk"]
+        area = get_object_or_404(
+            Area,id=pk_area
+        )
+        area.available = False
+        area.save()
+        return Response(
+            data={"id": area.id, "available": area.available}, status=status.HTTP_200_OK)
+
 
 class LocationListAPIView(generics.ListAPIView):
     serializer_class = LocationSerializer
