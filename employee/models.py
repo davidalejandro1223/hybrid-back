@@ -64,6 +64,8 @@ class Policy(models.Model):
         return verbose_days
     
     def set_days_of_the_week(self, days_list):
+        if isinstance(days_list, str):
+            return days_list
         days_str = ""
         for day in days_list:
             day_abr = list(filter(lambda x: x[1]==day, self.DAYS_OF_THE_WEEK))[0][0]
