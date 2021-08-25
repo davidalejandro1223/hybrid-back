@@ -32,7 +32,7 @@ class GetBranchOffices:
     def execute(self) -> QuerySet:
 
         employee = get_object_or_404(
-            User,is_active=True,is_worker=True,id=int(self.employee)
+            User,id=int(self.employee)
         )
 
         available_branch_offices = self.repository[0].get_branch_office_by_employee(
