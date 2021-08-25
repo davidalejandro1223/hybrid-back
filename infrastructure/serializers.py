@@ -113,6 +113,12 @@ class ReservaSerializer(serializers.Serializer):
     branch_office = BranchOfficeSerializer(read_only=True)
 
 
+class ReservaCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reserva
+        exclude = ['created_date','status']
+
+
 class AttendesByBranchOfficeSerializer(serializers.Serializer):
     first_name = serializers.CharField(source='employee.first_name')
     last_name = serializers.CharField(source='employee.last_name')

@@ -21,7 +21,8 @@ from infrastructure.models import (
     AreaConfig,
     Resource,
     Area,
-    Reserva
+    Reserva,
+    Seat
 )
 from employee.models import (
     ContagiousHistory,
@@ -49,7 +50,8 @@ from .serializers import (
     WriteAreaSerializer,
     MultiAreaSerializer,
     ReservasByEmployeeSerializer,
-    AreaAlternativeSerializer
+    AreaAlternativeSerializer,
+    ReservaCreateSerializer
 )
 from infrastructure.tasks import send_email, send_cancel_email_by_fase
 
@@ -161,6 +163,57 @@ class ContagiousHistoryCreateAPIView(generics.CreateAPIView):
         send_email(data)
         return Response(data={"msj": "Email enviado"}, status=status.HTTP_200_OK)
 
+class ReservaCreateAPIView(generics.CreateAPIView):
+    serializer_class = ReservaCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            employee = User.objects.get(pk=request.data["employee"])
+        except User.DoesNotExist:
+            return Response(data={"status": "No se encontró al trabajador"}, status=400)
+
+        if not employee.is_company_admin:
+            return Response(data={"status": "Usuario Admin no puede crear reserva"}, status=400)
+
+        try:
+            branch_office = BranchOffice.objects.get(pk=request.data["branch_office"])
+        except BranchOffice.DoesNotExist:
+            return Response(data={"status": "No se encontró la sucursal"}, status=400)
+
+        try:
+            area = Area.objects.get(pk=request.data["area"])
+        except Area.DoesNotExist:
+            return Response(data={"status": "No se encontró el área"}, status=400)
+
+        if not area.available:
+            return Response(data={"status": "El área no se encuentra disponible"}, status=400)
+
+        try:
+            resource = Resource.objects.get(pk=request.data["resource"])
+        except Resource.DoesNotExist:
+            return Response(data={"status": "No se encontró el recurso"}, status=400)
+
+        try:
+            seat = Seat.objects.get(pk=request.data["seat"])
+        except Seat.DoesNotExist:
+            return Response(data={"status": "No se encontró el puesto"}, status=400)
+
+        serializer = ReservaCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reserva = Reserva(
+            fijo=request.data["fijo"],
+            start_date=request.data["start_date"],
+            end_date=request.data["end_date"],
+            employee=employee,
+            branch_office=branch_office,
+            area=area,
+            resource=resource,
+            seat=seat,
+            status='ASIGNADA',
+        )
+        reserva.save()
+        return Response(data={"status": "Reserva asignada correctamente"})
 
 class ContagiousHistoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]

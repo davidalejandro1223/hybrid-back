@@ -21,6 +21,7 @@ from .views import (
     LocationsByCompanyAPIView,
     ChangeFaseInLocation,
     AreaViewSet,
+    ReservaCreateAPIView
 )
 
 router = DefaultRouter()
@@ -30,6 +31,7 @@ router.register(r"infrastructure/area", AreaViewSet, basename="area")
 urlpatterns = [
     path('infrastructure/employee/<int:employee_pk>/contagious_history',ContagiousHistoryView.as_view()),
     path("employee/contagious_history",ContagiousHistoryCreateAPIView.as_view()),
+    path("infrastructure/reserva",ReservaCreateAPIView.as_view()),
     path("infrastructure/employee-branch-office",BranchOfficeListAPIView.as_view()),
     path("infrastructure/branch-office/<int:branch_office_pk>/attendees-by-branch",AttendesByBranchOfficeListAPIView.as_view()),
     path("infrastructure/employee/<int:employee_pk>/reservas",ReservasByEmployeeListAPIView.as_view()),
