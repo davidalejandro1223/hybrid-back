@@ -4,9 +4,9 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from django.utils import timezone
+from datetime import datetime
 from django.shortcuts import get_object_or_404
-
+import pandas as pd
 from users.models import User
 from infrastructure.models import (
     Country,
@@ -184,7 +184,7 @@ class BookingStatusAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, branch_office_id):
-        uc = GetBranchOfficeBookingStatus(branch_office_id, timezone.now().replace(second=0, microsecond=0))
+        uc = GetBranchOfficeBookingStatus(branch_office_id, datetime.now().replace(second=0, microsecond=0))
         data = uc.execute()
         serializer = BookingStatusSerializer(data)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -232,3 +232,37 @@ class RetrieveUpdateDestroyAreaAPIView(generics.RetrieveUpdateDestroyAPIView):
         context = super().get_serializer_context()
         context["branch_id"] = self.kwargs["branch_office"]
         return context 
+
+class CovidReportAPIView(APIView):
+    def get(self, request, branch_office):
+        now = datetime.now().replace(second=0, microsecond=0)
+        full_reservas = Reserva.objects.filter(
+            start_date__lte=now,
+            branch_office_id=branch_office
+        )
+        
+        employees = full_reservas.distinct("employee").values("employee")
+        
+        data_full_reservas = full_reservas.values(
+            "employee__first_name",
+            "employee__last_name",
+            "start_date",
+            "end_date",
+            "branch_office__name",
+            "area__name",
+            "seat__id_in_area",
+            "status",
+        )
+        
+        df_reservas = pd.DataFrame(list(data_full_reservas))
+        df_reservas.columns = [
+                "Nombres Trabajador", 
+                "Apellidos Trabajador",
+                "Fecha inicio reserva",
+                "Fecha fin reserva",
+                "Sucursal",
+                "Area",
+                "Puesto",
+                "Estado"
+        ]
+        pass

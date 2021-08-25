@@ -16,7 +16,8 @@ from .views import (
     CountryListAPIView,
     CreateListAreaAPIView,
     RetrieveUpdateDestroyAreaAPIView,
-    ReservasByEmployeeListAPIView
+    ReservasByEmployeeListAPIView,
+    CovidReportAPIView
 )
 
 router = DefaultRouter()
@@ -35,6 +36,7 @@ urlpatterns = [
     path("infrastructure/country", CountryListAPIView.as_view()),
     path("infrastructure/country/<int:country_id>/location", LocationListAPIView.as_view()),
     path("infrastructure/branch-office/<int:branch_office>/area", CreateListAreaAPIView.as_view()),
-    path("infrastructure/branch-office/<int:branch_office>/area/<int:pk>", RetrieveUpdateDestroyAreaAPIView.as_view())
+    path("infrastructure/branch-office/<int:branch_office>/area/<int:pk>", RetrieveUpdateDestroyAreaAPIView.as_view()),
+    path("infrastructure/branch-office/<int:branch_office>/covid-report", CovidReportAPIView.as_view())
 ]
 urlpatterns += router.urls
