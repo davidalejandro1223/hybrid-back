@@ -119,7 +119,9 @@ class GenerateReservasWithPolicy:
         area_block = area.get_time_blocks()[0]["bloque 1"]
         start_date = datetime.now().replace(
             hour=area_block["start_time"].hour, 
-            minute=area_block["start_time"].minute
+            minute=area_block["start_time"].minute,
+            second=0,
+            microsecond=0
         
         )
         end_date = datetime.now().replace(
