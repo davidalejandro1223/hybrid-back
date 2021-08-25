@@ -173,7 +173,7 @@ class ReservaCreateAPIView(generics.CreateAPIView):
         except User.DoesNotExist:
             return Response(data={"status": "No se encontró al trabajador"}, status=400)
 
-        if not employee.is_company_admin:
+        if employee.is_company_admin:
             return Response(data={"status": "Usuario Admin no puede crear reserva"}, status=400)
 
         try:
